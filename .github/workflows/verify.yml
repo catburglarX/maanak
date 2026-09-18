@@ -182,6 +182,10 @@ jobs:
 
       - name: Browser and accessibility suite
         run: |
+          # The suites above bootstrap their own workspace, so the data is reset first.
+          # Without this, verify_browser.py finds an initialised workspace and cannot
+          # sign in as the administrator it expects to create.
+          docker compose run --rm --no-deps migrate python scripts/reset_data.py
           docker build -f api/Dockerfile.browser -t maanak-browser:ci api
           docker run --rm --network maanak_default \
             -v "$PWD/api:/w" -w /w -e BASE_URL=http://web:8080 maanak-browser:ci
@@ -214,7 +218,9 @@ jobs:
         working-directory: api
         run: |
           pip install cyclonedx-bom==4.6.1
-          cyclonedx-py requirements requirements.lock.txt --output-file ../sbom.json
+          # The flag is -o. --output-file is not an argument this version accepts, and
+          # passing it failed the job with "unrecognized arguments".
+          cyclonedx-py requirements requirements.lock.txt -o ../sbom.json
 
       - uses: actions/upload-artifact@v4
         with:

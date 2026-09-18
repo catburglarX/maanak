@@ -75,8 +75,22 @@ def seed_accounts() -> dict[str, str]:
             },
         )
     else:
-        print("  info  workspace already initialised; using ADMIN_EMAIL")
-        emails["admin"] = os.environ["ADMIN_EMAIL"]
+        # This suite bootstraps its own workspace and signs in as the administrator it
+        # created, so an already-initialised workspace means it cannot know the
+        # credentials. Reading os.environ["ADMIN_EMAIL"] here raised a bare KeyError
+        # that said nothing about the cause, which is a reset that did not happen.
+        existing = os.environ.get("ADMIN_EMAIL")
+        if not existing:
+            print("  FAIL  the workspace is already initialised, so this suite cannot")
+            print("        bootstrap the administrator it signs in as.")
+            print("        Reset the data first:")
+            print("          docker compose run --rm --no-deps migrate \\")
+            print("            python scripts/reset_data.py")
+            print("        Or name an existing administrator in ADMIN_EMAIL, whose")
+            print(f"        password must be {PASSWORD!r}.")
+            raise SystemExit(1)
+        print(f"  info  workspace already initialised; using ADMIN_EMAIL={existing}")
+        emails["admin"] = existing
 
     call("/auth/sign-in", {"email": emails["admin"], "password": PASSWORD})
     csrf = next((c.value for c in jar if c.name == "maanak_csrf"), None)
