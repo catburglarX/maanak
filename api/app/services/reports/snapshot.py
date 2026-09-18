@@ -35,6 +35,7 @@ from ...models.rule import RuleVersion
 from ...models.user import User
 from ...observability import get_logger
 from ..canonical import CANONICAL_ALGORITHM, canonical_sha256, json_safe
+from ..phrasing import counted, verb
 from ..references import REPORT_PREFIX, next_reference
 
 logger = get_logger(__name__)
@@ -367,7 +368,8 @@ async def issue_report(
     )
     if pending:
         raise GuardFailedError(
-            f"{len(pending)} machine reading(s) are still unreviewed.",
+            f"{counted(len(pending), 'machine reading')} "
+            f"{verb(len(pending), 'is', 'are')} still unreviewed.",
             code="review_incomplete",
         )
 

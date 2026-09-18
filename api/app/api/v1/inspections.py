@@ -63,6 +63,7 @@ from ...services import audit as audit_service
 from ...services import evidence as evidence_service
 from ...services import inspections as inspection_service
 from ...services import jobs, storage
+from ...services import reports as report_service
 from ...services.canonical import json_safe
 from ...services.extraction.fields import SPECS_BY_TYPE
 from ...services.rules import evaluate_inspection, summarise_outcomes
@@ -360,7 +361,8 @@ async def create_inspection(
         product = await load_product(db, created.id) or created
     else:
         raise ValidationError(
-            "Supply either an existing product_id or the details of a new product.",
+            "An inspection needs a product. Choose one already on record, or give the "
+            "brand, the product name and the commodity category of a new one.",
             details={"field": "product"},
         )
 
@@ -505,6 +507,10 @@ async def _build_detail(
                 "issued_at": item.issued_at,
                 "snapshot_sha256": item.snapshot_sha256,
                 "verification_code": item.verification_code,
+                # The reports register already exposed this. Without it here, the
+                # inspection screen could link the documents but not the public page a
+                # recipient uses to confirm the report is genuine.
+                "verification_url": report_service.verification_url(item),
                 "formats": [document.format for document in item.documents],
             }
             for item in reports

@@ -49,6 +49,7 @@ from ..observability import current_request_id, get_logger
 from ..security.permissions import JurisdictionScope
 from . import audit as audit_service
 from . import references
+from .phrasing import counted, verb
 
 logger = get_logger(__name__)
 
@@ -232,8 +233,9 @@ async def evaluate_guard(db: AsyncSession, guard: str, inspection: Inspection) -
         if pending:
             return GuardOutcome(
                 False,
-                f"{pending} machine reading(s) still need to be confirmed, corrected "
-                "or rejected.",
+                f"{counted(pending, 'machine reading')} still "
+                f"{verb(pending, 'needs', 'need')} to be confirmed, corrected or "
+                "rejected.",
             )
         return GuardOutcome(True)
 

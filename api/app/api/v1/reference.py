@@ -13,41 +13,43 @@ from typing import Any
 from fastapi import APIRouter, Depends
 
 from ...deps import Principal, get_principal
-from ...domain import enums, states
+from ...domain import enums, labels, states
 from ...security.permissions import permission_matrix
 
 router = APIRouter(prefix="/reference", tags=["reference"])
-
-
-def _enum_options(enum_class: type[enums.StrEnum]) -> list[dict[str, str]]:
-    return [
-        {"value": member.value, "label": member.value.replace("_", " ").capitalize()}
-        for member in enum_class
-    ]
 
 
 @router.get("/vocabulary", summary="Enumerations used across the API")
 async def vocabulary() -> dict[str, Any]:
     """Public: the sign-in page and the public complaint form both need this."""
     return {
-        "roles": _enum_options(enums.Role),
-        "inspection_states": _enum_options(enums.InspectionState),
-        "inspection_sources": _enum_options(enums.InspectionSource),
-        "package_faces": _enum_options(enums.PackageFace),
-        "face_capture_states": _enum_options(enums.FaceCaptureState),
-        "package_types": _enum_options(enums.PackageType),
-        "quantity_kinds": _enum_options(enums.QuantityKind),
-        "declaration_types": _enum_options(enums.DeclarationType),
-        "machine_states": _enum_options(enums.MachineState),
-        "review_states": _enum_options(enums.ReviewState),
-        "legal_outcomes": _enum_options(enums.LegalOutcome),
-        "rule_statuses": _enum_options(enums.RuleStatus),
-        "complaint_states": _enum_options(enums.ComplaintState),
-        "complaint_categories": _enum_options(enums.ComplaintCategory),
-        "case_states": _enum_options(enums.CaseState),
-        "notice_types": _enum_options(enums.NoticeType),
-        "delivery_methods": _enum_options(enums.DeliveryMethod),
-        "report_states": _enum_options(enums.ReportState),
+        "roles": labels.options(enums.Role),
+        "inspection_states": labels.options(enums.InspectionState),
+        "inspection_sources": labels.options(enums.InspectionSource),
+        "package_faces": labels.options(enums.PackageFace),
+        "face_capture_states": labels.options(enums.FaceCaptureState),
+        "package_types": labels.options(enums.PackageType),
+        "quantity_kinds": labels.options(enums.QuantityKind),
+        "declaration_types": labels.options(enums.DeclarationType),
+        "machine_states": labels.options(enums.MachineState),
+        "review_states": labels.options(enums.ReviewState),
+        "legal_outcomes": labels.options(enums.LegalOutcome),
+        # The three decisions an officer may record on an inspection. This is a
+        # narrower set than legal_outcomes, which is the vocabulary of a single rule
+        # test: a finding can come back "not applicable", an inspection cannot be
+        # decided that way. The list is derived from DECIDED_STATES, the same
+        # constant the service checks the submitted decision against, so the choices
+        # offered and the choices accepted cannot drift apart.
+        "decision_outcomes": labels.options_for(
+            tuple(state.value for state in enums.InspectionState if state in enums.DECIDED_STATES)
+        ),
+        "rule_statuses": labels.options(enums.RuleStatus),
+        "complaint_states": labels.options(enums.ComplaintState),
+        "complaint_categories": labels.options(enums.ComplaintCategory),
+        "case_states": labels.options(enums.CaseState),
+        "notice_types": labels.options(enums.NoticeType),
+        "delivery_methods": labels.options(enums.DeliveryMethod),
+        "report_states": labels.options(enums.ReportState),
     }
 
 

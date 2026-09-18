@@ -33,6 +33,7 @@ from ...models.inspection import Inspection, InspectionFace
 from ...models.product import Product
 from ...models.rule import RuleVersion
 from ...observability import get_logger
+from ..phrasing import counted, verb
 from .checks import ENGINE_VERSION, CheckInput, run_check
 from .selection import SelectionContext
 from .selection import select as select_applicable_rules
@@ -226,8 +227,9 @@ async def evaluate_inspection(
 
     if unreviewed:
         result.notes.append(
-            f"{unreviewed} machine reading(s) are still awaiting officer review and "
-            "were not used as inputs."
+            f"{counted(unreviewed, 'machine reading')} "
+            f"{verb(unreviewed, 'is', 'are')} still awaiting officer review and did "
+            "not reach the rule engine."
         )
     if not candidates:
         result.notes.append(
@@ -367,7 +369,8 @@ def summarise_outcomes(findings: list[Finding]) -> dict[str, Any]:
 
     if counts.get(LegalOutcome.NON_COMPLIANT.value):
         suggestion = LegalOutcome.NON_COMPLIANT.value
-        rationale = f"{counts[LegalOutcome.NON_COMPLIANT.value]} test(s) returned " "non-compliant."
+        failed = counts[LegalOutcome.NON_COMPLIANT.value]
+        rationale = f"{counted(failed, 'test')} returned non-compliant."
     elif counts.get(LegalOutcome.ADDITIONAL_EVIDENCE_REQUIRED.value):
         suggestion = LegalOutcome.ADDITIONAL_EVIDENCE_REQUIRED.value
         rationale = "Some tests need more evidence before they can be decided."
@@ -386,7 +389,7 @@ def summarise_outcomes(findings: list[Finding]) -> dict[str, Any]:
         "suggested_outcome": suggestion,
         "rationale": rationale,
         "note": (
-            "This is a summary of the deterministic tests. The recorded decision is "
-            "made by an authorised officer, who must give a reason."
+            "These are the deterministic tests. The decision on record is the one an "
+            "authorised officer gives a reason for."
         ),
     }

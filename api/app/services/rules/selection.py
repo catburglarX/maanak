@@ -29,6 +29,7 @@ from typing import Any
 
 from ...domain.enums import EFFECTIVE_RULE_STATUSES, RuleStatus
 from ...models.rule import RuleVersion
+from ..phrasing import counted
 
 
 @dataclass
@@ -302,8 +303,8 @@ def select(
         )
         winner = ordered[0]
         winner.reasons.append(
-            f"selected over {len(ordered) - 1} other in-force version(s) of {code} "
-            "because it has the latest effective date"
+            f"selected over {counted(len(ordered) - 1, 'other in-force version')} of "
+            f"{code} because it has the latest effective date"
         )
         selected.append(winner)
         for loser in ordered[1:]:

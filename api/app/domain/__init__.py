@@ -30,6 +30,7 @@ from .enums import (
     RuleStatus,
     values,
 )
+from .labels import label_for, options, options_for
 from .states import (
     CASE_MACHINE,
     COMPLAINT_MACHINE,
@@ -79,5 +80,8 @@ __all__ = [
     "RuleStatus",
     "StateMachine",
     "Transition",
+    "label_for",
+    "options",
+    "options_for",
     "values",
 ]

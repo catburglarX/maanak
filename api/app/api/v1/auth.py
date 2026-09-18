@@ -50,6 +50,7 @@ from ...security.ratelimit import (
     reset as reset_limit,
 )
 from ...services import accounts
+from ...services.phrasing import counted, verb
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 admin_router = APIRouter(prefix="/users", tags=["accounts"])
@@ -315,7 +316,12 @@ async def change_password(
     return Acknowledgement(
         message=(
             "Password changed."
-            + (f" {revoked} other session(s) were signed out." if revoked else "")
+            + (
+                f" {counted(revoked, 'other session')} "
+                f"{verb(revoked, 'was', 'were')} signed out."
+                if revoked
+                else ""
+            )
         )
     )
 
@@ -504,7 +510,7 @@ async def revoke_user_sessions(
         new_values={"sessions_revoked": revoked},
     )
     await db.commit()
-    return Acknowledgement(message=f"{revoked} session(s) ended.")
+    return Acknowledgement(message=f"{counted(revoked, 'session')} ended.")
 
 
 @admin_router.post(

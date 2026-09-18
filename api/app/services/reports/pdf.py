@@ -31,17 +31,28 @@ from reportlab.platypus import (
     TableStyle,
 )
 
+from ...domain import labels as domain_labels
 from ...observability import get_logger
+from ..phrasing import counted
 
 logger = get_logger(__name__)
 
 RENDERER_VERSION = "1"
 
-INK = colors.HexColor("#141414")
-GREY = colors.HexColor("#6B6B66")
-RULE = colors.HexColor("#D8D5CE")
-ACCENT = colors.HexColor("#7A2B2B")
-PANEL = colors.HexColor("#F6F4EF")
+# The same palette the browser application uses, so a report does not look like it
+# came from a different product. These were warm (ink #141414, cream panel #F6F4EF,
+# beige rule #D8D5CE, brick accent #7A2B2B) and the interface had already moved to
+# neutral greys.
+INK = colors.HexColor("#101820")
+GREY = colors.HexColor("#46463F")
+RULE = colors.HexColor("#DCDCDC")
+ACCENT = colors.HexColor("#750018")
+PANEL = colors.HexColor("#F5F5F5")
+RED = colors.HexColor("#9A1F1F")
+GREEN = colors.HexColor("#1F6B3A")
+# Neutral, not mustard. "Unable to determine" and "additional evidence required" mean
+# the system does not know yet, and uncertainty should not be coloured like a warning.
+SLATE = colors.HexColor("#44464A")
 
 DEVANAGARI_FONT_PATHS = (
     "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
@@ -173,18 +184,15 @@ def _paragraph(value: Any, styles: dict[str, ParagraphStyle], key: str = "body")
     return Paragraph(_escape(text) or "&nbsp;", style)
 
 
-OUTCOME_LABELS = {
-    "compliant": "Compliant",
-    "non_compliant": "Non-compliant",
-    "unable_to_determine": "Unable to determine",
-    "not_applicable": "Not applicable",
-    "additional_evidence_required": "Additional evidence required",
-}
+#: Labels come from the domain so the report, the screen and the API agree on the
+#: wording of every state and declaration name.
+label_for = domain_labels.label_for
+
 OUTCOME_COLOURS = {
-    "compliant": colors.HexColor("#1F6B3B"),
-    "non_compliant": ACCENT,
-    "unable_to_determine": colors.HexColor("#8A6A16"),
-    "additional_evidence_required": colors.HexColor("#8A6A16"),
+    "compliant": GREEN,
+    "non_compliant": RED,
+    "unable_to_determine": SLATE,
+    "additional_evidence_required": SLATE,
     "not_applicable": GREY,
 }
 
@@ -269,11 +277,7 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
 
     # --- Decision -------------------------------------------------------
     decision = str(inspection.get("decision") or "not recorded")
-    decision_label = {
-        "compliant": "Compliant",
-        "violation_found": "Violation found",
-        "unable_to_determine": "Unable to determine",
-    }.get(decision, decision.replace("_", " ").capitalize())
+    decision_label = label_for(decision) if inspection.get("decision") else "Not recorded"
     decided_by = people.get(str(inspection.get("decided_by_id")), {})
     designation = decided_by.get("designation")
     designation_suffix = f", {designation}" if designation else ""
@@ -306,7 +310,7 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
                     "TEXTCOLOR",
                     (0, 1),
                     (0, 1),
-                    ACCENT if decision == "violation_found" else INK,
+                    RED if decision == "violation_found" else INK,
                 ),
             ]
         )
@@ -344,11 +348,21 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
                 ],
                 [
                     _paragraph("Commodity category", styles),
-                    _paragraph(product.get("commodity_category"), styles),
+                    _paragraph(
+                        label_for(product["commodity_category"])
+                        if product.get("commodity_category")
+                        else "Not recorded",
+                        styles,
+                    ),
                 ],
                 [
                     _paragraph("Package type", styles),
-                    _paragraph(product.get("package_type"), styles),
+                    _paragraph(
+                        label_for(product["package_type"])
+                        if product.get("package_type")
+                        else "Not recorded",
+                        styles,
+                    ),
                 ],
                 [_paragraph("Declared net quantity", styles), _paragraph(quantity_text, styles)],
                 [_paragraph("Identifiers", styles), _paragraph(identifiers, styles)],
@@ -389,7 +403,7 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
             )
             rows.append(
                 [
-                    _paragraph(item["party_role"].replace("_", " ").capitalize(), styles),
+                    _paragraph(label_for(item["party_role"]), styles),
                     _paragraph(item["legal_name"], styles),
                     _paragraph(address or "Not recorded", styles),
                 ]
@@ -411,7 +425,7 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
     for item in snapshot.get("evidence", []):
         evidence_rows.append(
             [
-                _paragraph(item["face"].replace("_", " "), styles),
+                _paragraph(label_for(item["face"]), styles),
                 _paragraph(str(item.get("server_received_at"))[:19], styles, "small"),
                 _paragraph(f"{item['size_bytes'] // 1024} KB", styles, "small"),
                 Paragraph(_escape(item["sha256"]), styles["mono"]),
@@ -434,9 +448,9 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
         story.append(
             _paragraph(
                 "Image quality was accepted with a recorded reason for "
-                f"{len(overrides)} file(s): "
-                + "; ".join(
-                    f"{item['face'].replace('_', ' ')} — {item['quality_override_reason']}"
+                f"{counted(len(overrides), 'file')}. "
+                + " ".join(
+                    f"{label_for(item['face'])}: {item['quality_override_reason']}"
                     for item in overrides
                 ),
                 styles,
@@ -455,7 +469,7 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
             _paragraph(
                 "Package faces not captured: "
                 + "; ".join(
-                    f"{item['face'].replace('_', ' ')} ({item['capture_state'].replace('_', ' ')}"
+                    f"{label_for(item['face'])} ({label_for(item['capture_state']).lower()}"
                     + (f", {item['reason']}" if item.get("reason") else "")
                     + ")"
                     for item in faces_not_captured
@@ -490,14 +504,14 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
         machine = item.get("machine_reading") or {}
         machine_text = str(machine.get("display") or machine.get("value") or "not read")
         corrected = item.get("officer_corrected_value") or {}
-        review = item["review_state"].replace("_", " ")
+        review = label_for(item["review_state"])
         if corrected:
             review += f" to {corrected.get('display') or corrected.get('value')}"
         if item.get("correction_reason"):
-            review += f" — {item['correction_reason']}"
+            review += f". Reason: {item['correction_reason']}"
         reading_rows.append(
             [
-                _paragraph(item["declaration_type"].replace("_", " "), styles),
+                _paragraph(label_for(item["declaration_type"]), styles),
                 _paragraph(
                     f"{machine_text}"
                     + (
@@ -537,7 +551,7 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
             _paragraph(
                 f"{index}. {_escape(rule.get('title', 'Rule'))} "
                 f"<font color='{OUTCOME_COLOURS.get(outcome, INK).hexval()[2:]}'>"
-                f"[{OUTCOME_LABELS.get(outcome, outcome)}]</font>",
+                f"[{label_for(outcome)}]</font>",
                 styles,
             ),
             _paragraph(finding["explanation"], styles),
@@ -570,17 +584,22 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
             ],
         ]
         if finding.get("expected_value") or finding.get("observed_value"):
-            detail_rows.append(
-                [
-                    _paragraph("Expected / observed", styles, "small"),
-                    _paragraph(
-                        f"{finding.get('expected_value') or '—'}  /  "
-                        f"{finding.get('observed_value') or '—'}",
-                        styles,
-                        "small",
-                    ),
-                ]
-            )
+            # Only the side that has a value, so a presence test does not print
+            # "Expected: not recorded" against a rule that has nothing to expect.
+            if finding.get("expected_value"):
+                detail_rows.append(
+                    [
+                        _paragraph("Expected", styles, "small"),
+                        _paragraph(finding["expected_value"], styles, "small"),
+                    ]
+                )
+            if finding.get("observed_value"):
+                detail_rows.append(
+                    [
+                        _paragraph("Observed", styles, "small"),
+                        _paragraph(finding["observed_value"], styles, "small"),
+                    ]
+                )
         if finding.get("calculation"):
             detail_rows.append(
                 [
@@ -596,8 +615,8 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
                 [
                     _paragraph("Officer override", styles, "small"),
                     _paragraph(
-                        f"Engine returned {OUTCOME_LABELS.get(finding['engine_outcome'])}; "
-                        f"officer recorded {OUTCOME_LABELS.get(finding['officer_outcome'])}. "
+                        f"Engine returned {label_for(finding['engine_outcome'])}; "
+                        f"officer recorded {label_for(finding['officer_outcome'])}. "
                         f"{finding.get('officer_note') or ''}",
                         styles,
                         "small",
@@ -626,12 +645,15 @@ def render_pdf(snapshot: dict[str, Any], *, report: dict[str, Any]) -> tuple[byt
             [
                 _paragraph(str(item.get("occurred_at"))[:19], styles, "small"),
                 _paragraph(
-                    f"{item.get('from_state') or 'opened'} → {item['to_state']}", styles, "small"
+                    f"{label_for(item['from_state']) if item.get('from_state') else 'Opened'}"
+                    f" \u2192 {label_for(item['to_state'])}",
+                    styles,
+                    "small",
                 ),
                 _paragraph(
                     actor.get("name") or item.get("actor_role") or "system", styles, "small"
                 ),
-                _paragraph(item.get("reason") or "—", styles, "small"),
+                _paragraph(item.get("reason") or "None given", styles, "small"),
             ]
         )
     story.append(

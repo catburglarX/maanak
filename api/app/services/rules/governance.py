@@ -38,6 +38,7 @@ from ...errors import ConflictError, GuardFailedError, PermissionDeniedError, Va
 from ...models.rule import RuleReview, RuleTestRun, RuleVersion
 from ...observability import get_logger
 from .. import audit as audit_service
+from ..phrasing import counted, verb
 from .checks import available_checks
 from .simulator import Scenario, boundary_scenarios, default_scenarios, required_kinds_for, simulate
 
@@ -207,8 +208,8 @@ async def change_status(
             )
         if not run.all_passed:
             raise GuardFailedError(
-                f"{run.failed_count} simulator scenario(s) failed. Fix the rule or the "
-                "expected outcomes before approving.",
+                f"{counted(run.failed_count, 'simulator scenario')} failed. Fix the "
+                "rule or the expected outcomes before approving.",
                 code="simulation_failed",
                 details={"failed_count": run.failed_count},
             )
@@ -369,7 +370,10 @@ def governance_summary(rule: RuleVersion, run: RuleTestRun | None) -> dict[str, 
         blockers.append("Run the simulator.")
     else:
         if not run.all_passed:
-            blockers.append(f"{run.failed_count} simulator scenario(s) fail.")
+            blockers.append(
+                f"{counted(run.failed_count, 'simulator scenario')} "
+                f"{verb(run.failed_count, 'fails', 'fail')}."
+            )
         missing = [
             kind
             for kind in required_kinds_for(rule)

@@ -20,15 +20,16 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt, RGBColor
 
+from ...domain import labels as domain_labels
+
 RENDERER_VERSION = "1"
 
-OUTCOME_LABELS = {
-    "compliant": "Compliant",
-    "non_compliant": "Non-compliant",
-    "unable_to_determine": "Unable to determine",
-    "not_applicable": "Not applicable",
-    "additional_evidence_required": "Additional evidence required",
-}
+#: Labels come from the domain, so the editable document, the PDF and the screen
+#: cannot describe the same state in three different ways.
+label_for = domain_labels.label_for
+
+GREY = RGBColor(0x46, 0x46, 0x3F)
+RED = RGBColor(0x9A, 0x1F, 0x1F)
 
 
 def _set_language(document: DocumentObject, language: str = "en-IN") -> None:
@@ -88,23 +89,19 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
         f"Revision {report['revision']} · Issued {report['issued_at']}"
     )
     run.font.size = Pt(9)
-    run.font.color.rgb = RGBColor(0x6B, 0x6B, 0x66)
+    run.font.color.rgb = GREY
 
     # --- Decision -------------------------------------------------------
     document.add_heading("Recorded decision", level=1)
     decision = str(inspection.get("decision") or "not recorded")
-    decision_label = {
-        "compliant": "Compliant",
-        "violation_found": "Violation found",
-        "unable_to_determine": "Unable to determine",
-    }.get(decision, decision.replace("_", " ").capitalize())
+    decision_label = label_for(decision) if inspection.get("decision") else "Not recorded"
 
     paragraph = document.add_paragraph()
     decision_run = paragraph.add_run(decision_label)
     decision_run.bold = True
     decision_run.font.size = Pt(13)
     if decision == "violation_found":
-        decision_run.font.color.rgb = RGBColor(0x7A, 0x2B, 0x2B)
+        decision_run.font.color.rgb = RED
 
     document.add_paragraph(inspection.get("decision_note") or "No reason recorded.")
     decided_by = people.get(str(inspection.get("decided_by_id")), {})
@@ -122,7 +119,7 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
         [
             ("Inspection reference", str(inspection.get("reference"))),
             ("Inspection date", str(inspection.get("inspection_date"))),
-            ("Source", str(inspection.get("source", "")).replace("_", " ")),
+            ("Source", label_for(str(inspection.get("source", "")))),
             ("Jurisdiction", str(inspection.get("jurisdiction_name"))),
             ("Premises", str(inspection.get("premises_name") or "")),
             ("Premises address", str(inspection.get("premises_address") or "")),
@@ -143,8 +140,8 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
             ("Brand", str(product.get("brand"))),
             ("Product", str(product.get("name"))),
             ("Common or generic name", str(product.get("common_generic_name") or "")),
-            ("Commodity category", str(product.get("commodity_category"))),
-            ("Package type", str(product.get("package_type"))),
+            ("Commodity category", label_for(str(product.get("commodity_category") or ""))),
+            ("Package type", label_for(str(product.get("package_type") or ""))),
             (
                 "Declared net quantity",
                 f"{quantity} {product.get('declared_net_quantity_unit') or ''}".strip()
@@ -169,7 +166,7 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
         _mark_header_row(table)
         for item in responsible:
             cells = table.add_row().cells
-            cells[0].text = item["party_role"].replace("_", " ").capitalize()
+            cells[0].text = label_for(item["party_role"])
             cells[1].text = item["legal_name"]
             cells[2].text = ", ".join(
                 part
@@ -195,7 +192,7 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
     _mark_header_row(table)
     for item in snapshot.get("evidence", []):
         cells = table.add_row().cells
-        cells[0].text = item["face"].replace("_", " ")
+        cells[0].text = label_for(item["face"])
         cells[1].text = str(item.get("server_received_at"))[:19]
         cells[2].text = f"{item['size_bytes'] // 1024} KB"
         cells[3].text = item["sha256"]
@@ -208,7 +205,7 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
         run = paragraph.add_run(
             "Package faces not captured: "
             + "; ".join(
-                f"{item['face'].replace('_', ' ')} ({item['capture_state'].replace('_', ' ')}"
+                f"{label_for(item['face'])} ({label_for(item['capture_state']).lower()}"
                 + (f", {item['reason']}" if item.get("reason") else "")
                 + ")"
                 for item in not_captured
@@ -233,13 +230,13 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
     for item in snapshot.get("readings", []):
         machine = item.get("machine_reading") or {}
         corrected = item.get("officer_corrected_value") or {}
-        review = item["review_state"].replace("_", " ")
+        review = label_for(item["review_state"])
         if corrected:
             review += f" to {corrected.get('display') or corrected.get('value')}"
         if item.get("correction_reason"):
-            review += f" — {item['correction_reason']}"
+            review += f". Reason: {item['correction_reason']}"
         cells = table.add_row().cells
-        cells[0].text = item["declaration_type"].replace("_", " ")
+        cells[0].text = label_for(item["declaration_type"])
         cells[1].text = str(machine.get("display") or machine.get("value") or "not read")
         cells[2].text = review
         cells[3].text = "Yes" if item.get("used_for_legal_tests") else "No"
@@ -253,7 +250,7 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
         rule = rule_versions.get(finding["rule_version_id"], {})
         outcome = finding["effective_outcome"]
         document.add_heading(
-            f"{index}. {rule.get('title', 'Rule')} — {OUTCOME_LABELS.get(outcome, outcome)}",
+            f"{index}. {rule.get('title', 'Rule')}: {label_for(outcome)}",
             level=2,
         )
         document.add_paragraph(finding["explanation"])
@@ -272,20 +269,16 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
                 "workspace only.",
             ),
         ]
-        if finding.get("expected_value") or finding.get("observed_value"):
-            rows.append(
-                (
-                    "Expected / observed",
-                    f"{finding.get('expected_value') or '—'} / "
-                    f"{finding.get('observed_value') or '—'}",
-                )
-            )
+        if finding.get("expected_value"):
+            rows.append(("Expected", str(finding["expected_value"])))
+        if finding.get("observed_value"):
+            rows.append(("Observed", str(finding["observed_value"])))
         if finding.get("officer_outcome"):
             rows.append(
                 (
                     "Officer override",
-                    f"Engine returned {OUTCOME_LABELS.get(finding['engine_outcome'])}; "
-                    f"officer recorded {OUTCOME_LABELS.get(finding['officer_outcome'])}. "
+                    f"Engine returned {label_for(finding['engine_outcome'])}; "
+                    f"officer recorded {label_for(finding['officer_outcome'])}. "
                     f"{finding.get('officer_note') or ''}",
                 )
             )
@@ -313,9 +306,12 @@ def render_docx(snapshot: dict[str, Any], *, report: dict[str, Any]) -> bytes:
         actor = people.get(str(item.get("actor_id")), {})
         cells = table.add_row().cells
         cells[0].text = str(item.get("occurred_at"))[:19]
-        cells[1].text = f"{item.get('from_state') or 'opened'} to {item['to_state']}"
+        cells[1].text = (
+            f"{label_for(item['from_state']) if item.get('from_state') else 'Opened'}"
+            f" to {label_for(item['to_state'])}"
+        )
         cells[2].text = actor.get("name") or item.get("actor_role") or "system"
-        cells[3].text = item.get("reason") or "—"
+        cells[3].text = item.get("reason") or "None given"
 
     # --- Verification ---------------------------------------------------
     document.add_heading("Verification", level=1)
