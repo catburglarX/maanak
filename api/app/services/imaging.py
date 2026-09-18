@@ -329,12 +329,59 @@ def _scaled_grey(grey: np.ndarray, target_width: int = 1000) -> np.ndarray:
     )
 
 
+def detect_backdrop(grey: np.ndarray) -> tuple[np.ndarray, float]:
+    """Find a plain studio backdrop. Returns ``(mask, fraction_of_frame)``.
+
+    A product listing photograph is shot against seamless white, and that backdrop is
+    clipped, perfectly flat and very large. It satisfies every condition
+    :func:`measure_glare` uses to identify a blown highlight, so a catalogue image came
+    back with glare at 55 per cent of the frame against a 3 per cent threshold, and
+    bright clipping at 71 per cent against 25. Two blocking failures, one cause, and the
+    cause was the backdrop rather than the light.
+
+    Geometry separates the two. A backdrop surrounds the subject and therefore reaches
+    three or more edges of the frame. A specular highlight sits on the package, and if
+    one ever did reach three edges the photograph would be almost entirely blown out,
+    which the brightness and clipping signals report on their own.
+
+    Measured on a 679x679 catalogue image of a nutrition panel: 64 per cent of the frame
+    is pure 255 and touches all four edges.
+    """
+    normalised = _scaled_grey(grey)
+    total = float(normalised.size)
+    height, width = normalised.shape
+
+    mask = (normalised >= CLIPPING_LEVEL).astype(np.uint8)
+    if not mask.any():
+        return np.zeros_like(normalised, dtype=bool), 0.0
+
+    kernel = np.ones((3, 3), np.uint8)
+    closed: Any = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(closed, connectivity=8)
+
+    backdrop = np.zeros_like(normalised, dtype=bool)
+    for index in range(1, count):
+        left = stats[index, cv2.CC_STAT_LEFT]
+        top = stats[index, cv2.CC_STAT_TOP]
+        right = left + stats[index, cv2.CC_STAT_WIDTH]
+        bottom = top + stats[index, cv2.CC_STAT_HEIGHT]
+        edges = sum(
+            (left == 0, top == 0, right >= width, bottom >= height),
+        )
+        # Three edges rather than four, so a subject sitting flush against one side of
+        # the frame does not hide its own backdrop from this test.
+        if edges >= 3:
+            backdrop |= labels == index
+
+    return backdrop, float(backdrop.sum()) / total
+
+
 def measure_sharpness(grey: np.ndarray) -> float:
     normalised = _scaled_grey(grey)
     return float(cv2.Laplacian(normalised, cv2.CV_64F).var())
 
 
-def measure_glare(grey: np.ndarray) -> tuple[float, float]:
+def measure_glare(grey: np.ndarray, backdrop: np.ndarray | None = None) -> tuple[float, float]:
     """Return ``(glare_area_fraction, largest_patch_fraction)``.
 
     Glare is a *clipped* region, not a bright one. Two conditions must both hold:
@@ -345,10 +392,24 @@ def measure_glare(grey: np.ndarray) -> tuple[float, float]:
     Counting merely bright pixels would flag every white pouch, which is why the
     threshold sits at clipping level and why the region is also required to be
     locally flat.
+
+    ``backdrop`` excludes a plain studio background found by :func:`detect_backdrop`,
+    and the fractions are then expressed against the subject rather than the whole
+    frame. Glare covering a tenth of the package is the useful number; the same patch
+    as a fraction of a mostly empty catalogue frame is not.
     """
     normalised = _scaled_grey(grey)
-    total = float(normalised.size)
+    if backdrop is not None and backdrop.any():
+        subject = ~backdrop
+        total = float(subject.sum())
+    else:
+        subject = None
+        total = float(normalised.size)
+    if total <= 0:
+        return 0.0, 0.0
     mask = (normalised >= CLIPPING_LEVEL).astype(np.uint8)
+    if subject is not None:
+        mask &= subject.astype(np.uint8)
     if not mask.any():
         return 0.0, 0.0
 
@@ -379,10 +440,35 @@ def measure_glare(grey: np.ndarray) -> tuple[float, float]:
     return sum(areas) / total, max(areas) / total
 
 
-def measure_exposure(grey: np.ndarray) -> tuple[float, float, float, float]:
-    """Return ``(mean, std, clipped_dark_fraction, clipped_bright_fraction)``."""
+def measure_exposure(
+    grey: np.ndarray, backdrop: np.ndarray | None = None
+) -> tuple[float, float, float, float]:
+    """Return ``(mean, std, clipped_dark_fraction, clipped_bright_fraction)``.
+
+    ``backdrop`` excludes a plain studio background, for the reason given in
+    :func:`detect_backdrop`. The clipping message tells an officer that print inside a
+    washed-out area may be unreadable, and there is no print on a seamless backdrop, so
+    counting it produced a warning about nothing. Mean and standard deviation are also
+    taken over the subject, since the backdrop otherwise drags both toward white.
+    """
     values = grey.astype(np.float32)
+    if backdrop is not None and backdrop.any():
+        # detect_backdrop works on the scaled copy, so the mask is resized back to the
+        # original geometry before it is used as an index here.
+        if backdrop.shape != values.shape:
+            resized = cv2.resize(
+                backdrop.astype(np.uint8),
+                (values.shape[1], values.shape[0]),
+                interpolation=cv2.INTER_NEAREST,
+            ).astype(bool)
+        else:
+            resized = backdrop
+        subject = values[~resized]
+        if subject.size >= values.size * 0.02:
+            values = subject
     total = float(values.size)
+    if total <= 0:
+        return 0.0, 0.0, 0.0, 0.0
     return (
         float(values.mean()),
         float(values.std()),
@@ -595,7 +681,25 @@ def analyse_quality(decoded: DecodedImage) -> QualityReport:
             Signal("sharpness", Severity.OK, round(sharpness, 1), None, "The image is sharp.")
         )
 
-    glare_area, largest_patch = measure_glare(decoded.grey)
+    # A plain studio backdrop is found once and excluded from both measurements that
+    # would otherwise count it, so a catalogue photograph is not reported as glare and
+    # as washed-out highlights for the same pixels.
+    backdrop, backdrop_fraction = detect_backdrop(decoded.grey)
+    if backdrop_fraction >= 0.10:
+        signals.append(
+            Signal(
+                "backdrop",
+                Severity.OK,
+                round(backdrop_fraction * 100, 1),
+                None,
+                "A plain background covers part of the frame and has been excluded from "
+                "the glare and exposure measurements. The remaining signals describe "
+                "the package itself.",
+                unit="% of frame",
+            )
+        )
+
+    glare_area, largest_patch = measure_glare(decoded.grey, backdrop)
     if glare_area >= thresholds["glare_area_blocking"]:
         signals.append(
             Signal(
@@ -632,7 +736,7 @@ def analyse_quality(decoded: DecodedImage) -> QualityReport:
             )
         )
 
-    mean, deviation, dark_clip, bright_clip = measure_exposure(decoded.grey)
+    mean, deviation, dark_clip, bright_clip = measure_exposure(decoded.grey, backdrop)
     if dark_clip >= thresholds["dark_clipped_blocking"] or mean < thresholds["brightness_floor"]:
         signals.append(
             Signal(

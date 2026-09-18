@@ -105,6 +105,7 @@ closed, so repeated runs from one container would otherwise start returning 429.
 | `tests/test_extraction_values.py` | 43 | nothing | The arithmetic a finding rests on, asserted as exact `Decimal` values |
 | `tests/test_domain_units.py` | 51 | nothing | GS1 check digits worked through by hand; permission matrix; jurisdiction isolation; state machine edges, guards and reachability; canonical hashing determinism |
 | `tests/test_presentation.py` | 24 | nothing | Every enum label reads as English rather than as a raw value; the JavaScript override table matches the Python one; counted nouns never fall back to "(s)"; the decision choices offered are exactly the ones the service accepts; no em dash survives in any source file |
+| `tests/test_imaging_quality.py` | 11 | nothing | A plain studio backdrop is not counted as glare and not counted again as bright clipping, and a genuine highlight burnt into the panel still blocks. Both directions, because a fix that silenced glare everywhere would be worse than the false positive it replaced |
 | `check_prose.py` | 41 files | nothing | No machine-writing tells across 28 pages and 13 documents: no tool leak markers, no scaffold headings, no participial tails, no copula avoidance, no em dash anywhere |
 | `audit_app.py` | 106 | full stack + Chromium | Every route in the OpenAPI document is declared; all 28 pages load and reach their data; no stringified object or undefined value reaches the screen; the inspection screen passes axe as a reviewer, with the decision form rendered |
 | `measure_a11y.py` | 14 pages | Chromium | Zero axe violations at WCAG 2.0, 2.1 and 2.2 level A and AA; zero targets under 24 by 24 CSS pixels, which axe has no rule for; zero sticky or fixed positioning on a public page |
@@ -118,7 +119,7 @@ closed, so repeated runs from one container would otherwise start returning 429.
 | `check_error_messages.py` | 164 messages | nothing | No error an officer reads names a JSON key or a database column |
 | `check_api_reach.py` | 92 operations | API | Every endpoint is either reached from a screen or recorded, with a reason, as deliberately not reached |
 
-Total: **510 assertions** across the eight verification suites, plus **118 pytest items**
+Total: **510 assertions** across the eight verification suites, plus **130 pytest items**
 in the fast set (which includes three of the suites, since they need no services).
 
 ## Running one suite
