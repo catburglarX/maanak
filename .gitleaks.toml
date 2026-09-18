@@ -1,0 +1,49 @@
+# gitleaks configuration.
+#
+# Eight findings, all of them the same kind of thing. The verification suites create
+# their own accounts and then sign in as them, so each one carries the password it just
+# set as a literal. The CI workflow carries an encryption key that only ever encrypts
+# data thrown away when the run ends. gitleaks classifies these as generic-api-key,
+# which is correct pattern matching and the wrong conclusion.
+#
+# Allowlisted by exact value rather than by path. Excluding api/scripts/verify_*.py
+# wholesale would be less work and much worse: a real credential pasted into one of
+# those files would then go unreported. Every entry below is a string that exists only
+# to be thrown away, and anything else in those files is still scanned.
+#
+# Adding a value here is a decision to defend. If a string in this list ever becomes a
+# credential that protects something real, it must leave the list and the code.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Credentials that exist only inside a test run"
+regexes = [
+  # The password the verification suites set on the accounts they create, then use to
+  # sign in as them. The suites run against a workspace that is reset immediately
+  # afterwards. api/scripts/reset_data.py truncates every table it touches.
+  '''Ganga-Yamuna-River-88''',
+  # The password seed_demo.py sets on the seven local demo accounts. It is printed to
+  # the terminal by the seeder and documented in the README as a throwaway.
+  '''Ganga-Yamuna-2026''',
+  # Deliberately wrong passwords. verify_auth_flow.py asserts that an unknown account
+  # and a wrong password produce the same error and the same timing, so it has to send
+  # credentials that will fail.
+  '''definitely-wrong-1''',
+  '''password1234''',
+  # The CI encryption key for MinIO, from .github/workflows/verify.yml. It decodes to
+  # "ci-test-kms-key-32-bytes-long!!!" and encrypts objects in a container that is
+  # destroyed at the end of the job.
+  '''Y2ktdGVzdC1rbXMta2V5LTMyLWJ5dGVzLWxvbmchISE=''',
+  '''ci-test-kms-key-32-bytes-long''',
+  # The superseded 31-byte version of the same key. It is still in the first commit and
+  # git history does not change, so a full-history scan finds it there. The CI action
+  # passes --log-opts=-1 and only reads the newest commit, so this entry matters for
+  # anyone running gitleaks over the whole repository by hand.
+  '''Y2ktdGVzdC1rbXMta2V5LTMyLWJ5dGVzLWxvbmchIQ==''',
+  # The remaining CI values from the same env block, for the same reason.
+  '''ci-postgres-password''',
+  '''ci-jwt-secret-value-at-least-thirty-two-characters''',
+  '''ci-object-storage-secret''',
+]
