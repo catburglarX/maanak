@@ -24,6 +24,8 @@ AXE_PATH = os.environ.get("AXE_SOURCE_PATH", "/w/scripts/axe.min.js")
 
 PAGES = [
     "index.html",
+    "services.html",
+    "package-checklist.html",
     "complain.html",
     "complaint-status.html",
     "verify.html",

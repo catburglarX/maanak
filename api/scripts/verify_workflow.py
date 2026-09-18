@@ -18,6 +18,7 @@ from datetime import date
 
 import httpx
 from PIL import Image, ImageDraw, ImageFont
+from session_client import RefreshingClient
 
 BASE_URL = os.environ.get("API_URL", "http://api:8000")
 PASSWORD = "Ganga-Yamuna-River-88"
@@ -98,7 +99,7 @@ def main() -> int:
     reviewer_email = f"reviewer.{suffix}@example.org"
     outsider_email = f"outsider.{suffix}@example.org"
 
-    with httpx.Client(base_url=BASE_URL, timeout=180) as admin:
+    with RefreshingClient(base_url=BASE_URL, timeout=180) as admin:
         print("accounts")
         response = admin.post(
             "/api/v1/auth/bootstrap",
@@ -144,7 +145,7 @@ def main() -> int:
     # ------------------------------------------------------------------
     # Rule governance
     # ------------------------------------------------------------------
-    with httpx.Client(base_url=BASE_URL, timeout=180) as author:
+    with RefreshingClient(base_url=BASE_URL, timeout=180) as author:
         author.post("/api/v1/auth/sign-in", json={"email": author_email, "password": PASSWORD})
         print("rule seeding")
         seeded = author.post("/api/v1/rules/seed", headers=csrf(author))
@@ -197,7 +198,7 @@ def main() -> int:
         # Checked with the approver account, not the author: otherwise the
         # separation-of-duties rule fires first and the simulation gate is never
         # reached. Both gates are exercised, one at a time.
-        with httpx.Client(base_url=BASE_URL, timeout=60) as early_approver:
+        with RefreshingClient(base_url=BASE_URL, timeout=60) as early_approver:
             early_approver.post(
                 "/api/v1/auth/sign-in", json={"email": approver_email, "password": PASSWORD}
             )
@@ -249,7 +250,7 @@ def main() -> int:
                 "stable self-approval error code",
             )
 
-    with httpx.Client(base_url=BASE_URL, timeout=180) as approver:
+    with RefreshingClient(base_url=BASE_URL, timeout=180) as approver:
         approver.post("/api/v1/auth/sign-in", json={"email": approver_email, "password": PASSWORD})
         detail = approver.get(f"/api/v1/rules/{rule_id}").json()
         approved = approver.post(
@@ -318,7 +319,7 @@ def main() -> int:
     # ------------------------------------------------------------------
     # Inspection
     # ------------------------------------------------------------------
-    with httpx.Client(base_url=BASE_URL, timeout=300) as officer:
+    with RefreshingClient(base_url=BASE_URL, timeout=300) as officer:
         officer.post("/api/v1/auth/sign-in", json={"email": officer_email, "password": PASSWORD})
         headers = csrf(officer)
 
@@ -531,7 +532,7 @@ def main() -> int:
         check(advanced.status_code == 200, f"sent for reviewer decision ({advanced.status_code})")
 
     print("cross-jurisdiction denial")
-    with httpx.Client(base_url=BASE_URL, timeout=60) as outsider:
+    with RefreshingClient(base_url=BASE_URL, timeout=60) as outsider:
         outsider.post("/api/v1/auth/sign-in", json={"email": outsider_email, "password": PASSWORD})
         response = outsider.get(f"/api/v1/inspections/{inspection_id}")
         check(
@@ -545,7 +546,7 @@ def main() -> int:
         )
 
     print("reviewer decision")
-    with httpx.Client(base_url=BASE_URL, timeout=120) as reviewer:
+    with RefreshingClient(base_url=BASE_URL, timeout=120) as reviewer:
         reviewer.post("/api/v1/auth/sign-in", json={"email": reviewer_email, "password": PASSWORD})
         headers = csrf(reviewer)
         detail = reviewer.get(f"/api/v1/inspections/{inspection_id}").json()
@@ -713,7 +714,7 @@ def main() -> int:
         )
 
     print("public verification")
-    with httpx.Client(base_url=BASE_URL, timeout=60) as public:
+    with RefreshingClient(base_url=BASE_URL, timeout=60) as public:
         found = public.get(
             "/api/v1/public/reports/verify", params={"reference": report["reference"]}
         )

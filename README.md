@@ -66,6 +66,28 @@ Consumers need no account. A complaint can be triaged into an inspection, carryi
 consumer's photograph across as evidence. A reported inspection can become a case with a
 served, frozen notice.
 
+### What the public can do without an account
+
+Four services, exposed on the homepage and gathered under
+[web/services.html](web/services.html):
+
+| Service | Needs | Returns |
+| --- | --- | --- |
+| Read what must be printed on a package | nothing | The eleven declarations in plain language, each with the provision it is attributed to and whether that attribution is confirmed |
+| Report a packaged product | a photograph and a description | A reference to keep. Contact details are optional |
+| Track that report | the reference **and** the contact detail given | Progress only, never the inspection that followed |
+| Verify a report reference | the reference and its printed code | Whether the report was issued and is unchanged, disclosing nothing about the case |
+
+![Public services](docs/screenshots/public-services.png)
+
+The services page also states the boundary, which matters more than appearing complete.
+**Nothing here assesses nutrition, ingredients, allergens or food safety.** No rule in
+this system derives from the Food Safety and Standards regulations, and it gives no
+dietary advice. Net quantity cannot be confirmed from a photograph, and a readable
+barcode is not evidence that a product is genuine. For each of those the page names the
+authority that does hold the power: FSSAI, the state Controller of Legal Metrology, the
+National Consumer Helpline on 1915, and electronic filing before a consumer commission.
+
 ---
 
 ## Character height, and why it refuses to guess

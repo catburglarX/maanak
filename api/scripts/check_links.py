@@ -21,6 +21,8 @@ BASE_URL = os.environ.get("BASE_URL", "http://web:8080")
 
 PAGES = [
     "index.html",
+    "services.html",
+    "package-checklist.html",
     "complain.html",
     "complaint-status.html",
     "verify.html",

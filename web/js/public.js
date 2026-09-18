@@ -2,11 +2,12 @@
 import { el, $ } from './util.js';
 import { initChrome } from './chrome.js';
 
-// The two section links point at the homepage anchors, written in absolute form so
-// they work from every public page rather than only from the homepage.
+// Nav items must go somewhere. The two entries here that used to point at homepage
+// anchors have been replaced by pages a visitor can actually land on, link to and
+// bookmark.
 const PUBLIC_LINKS = [
-  ['/index.html#platform', 'Platform'],
-  ['/index.html#method', 'Method'],
+  ['/services.html', 'Public services'],
+  ['/package-checklist.html', 'What the law requires'],
   ['/complain.html', 'Report a product'],
 ];
 
@@ -18,8 +19,9 @@ const UTILITY_LINKS = [
 // Grouped so that every public route stays reachable from the footer once the
 // header carries only the three primary sections.
 const FOOTER_GROUPS = [
-  ['Platform', [
-    ['/login.html', 'Officer sign in'],
+  ['For the public', [
+    ['/services.html', 'Public services'],
+    ['/package-checklist.html', 'What the law requires'],
     ['/complain.html', 'Report a product'],
     ['/complaint-status.html', 'Check your report'],
     ['/verify.html', 'Verify a report'],
@@ -28,11 +30,13 @@ const FOOTER_GROUPS = [
     ['/legal-sources.html', 'Legal sources'],
     ['/responsible-use.html', 'Responsible use'],
     ['/security.html', 'Security'],
+    ['/login.html', 'Officer sign in'],
   ]],
   ['Legal', [
     ['/privacy.html', 'Privacy'],
     ['/accessibility.html', 'Accessibility'],
     ['/terms.html', 'Terms'],
+    ['/contact.html', 'Contact'],
   ]],
 ];
 

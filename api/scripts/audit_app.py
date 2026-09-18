@@ -30,6 +30,8 @@ PASSWORD = os.environ.get("DEMO_PASSWORD", "Ganga-Yamuna-2026")
 
 PUBLIC_PAGES = [
     "index.html",
+    "services.html",
+    "package-checklist.html",
     "complain.html",
     "complaint-status.html",
     "verify.html",

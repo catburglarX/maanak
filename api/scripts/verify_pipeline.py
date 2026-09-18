@@ -18,6 +18,7 @@ from datetime import date
 
 import httpx
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from session_client import RefreshingClient
 
 BASE_URL = os.environ.get("API_URL", "http://api:8000")
 PASSWORD = "Ganga-Yamuna-River-88"
@@ -128,7 +129,7 @@ def main() -> int:
     suffix = uuid.uuid4().hex[:8]
     admin_email = f"admin.{suffix}@example.org"
 
-    with httpx.Client(base_url=BASE_URL, timeout=120) as client:
+    with RefreshingClient(base_url=BASE_URL, timeout=120) as client:
         print("setup")
         status = client.get("/api/v1/auth/status").json()
         if not status.get("initialised"):
@@ -170,7 +171,7 @@ def main() -> int:
         )
         check(created.status_code == 201, f"inspector account created ({created.status_code})")
 
-    with httpx.Client(base_url=BASE_URL, timeout=180) as officer:
+    with RefreshingClient(base_url=BASE_URL, timeout=180) as officer:
         officer.post("/api/v1/auth/sign-in", json={"email": officer_email, "password": PASSWORD})
         headers = csrf(officer)
 
