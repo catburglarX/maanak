@@ -89,7 +89,7 @@ function renderAttachments(box) {
   const list = el('ul', {});
   for (const a of atts) {
     const li = el('li', {}, [
-      document.createTextNode(`${labelize(a.kind)} — ${a.filename || 'file'} (${a.mime_type || ''}) `),
+      document.createTextNode(`${labelize(a.kind)}: ${a.filename || 'unnamed file'}${a.mime_type ? ` (${a.mime_type})` : ''} `),
     ]);
     const btn = el('button', { class: 'btn btn-sm', type: 'button', text: 'View' });
     btn.addEventListener('click', async () => {
@@ -115,7 +115,7 @@ function renderActions(box) {
 
   if (can('complaint.triage')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Triage' }); b.addEventListener('click', triage); row.appendChild(b); }
   if (can('complaint.assign')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Assign officer' }); b.addEventListener('click', assign); row.appendChild(b); }
-  if (can('complaint.transition') || can('complaint.triage')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Change state' }); b.addEventListener('click', transition); row.appendChild(b); }
+  if (can('complaint.resolve') || can('complaint.triage')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Change state' }); b.addEventListener('click', transition); row.appendChild(b); }
   if (can('inspection.create')) { any = true; const b = el('button', { class: 'btn btn-primary', type: 'button', text: 'Convert to inspection' }); b.addEventListener('click', convert); row.appendChild(b); }
 
   if (!any) bar.appendChild(el('p', { class: 'muted', text: 'You do not have permission to act on this complaint.' }));
@@ -181,7 +181,7 @@ async function assign() {
     const res = await api.get('/users', { page: 1, page_size: 100, active: true });
     clear(sel);
     sel.appendChild(el('option', { value: '', text: 'Select officer…' }));
-    for (const u of res.items || []) sel.appendChild(el('option', { value: u.id, text: `${u.name} — ${labelize(u.role)}` }));
+    for (const u of res.items || []) sel.appendChild(el('option', { value: u.id, text: `${u.name} (${labelize(u.role)})` }));
   } catch { clear(sel); sel.appendChild(el('option', { value: '', text: 'Could not load officers' })); }
 }
 

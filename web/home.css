@@ -1,8 +1,8 @@
 /* Homepage composition.
  *
- * Kept separate from styles.css because these devices — the overlaid hero, the
- * evidence strip, the numbered method columns and the dark traceability band —
- * appear on the homepage only. Everything is built from the tokens declared in
+ * Kept separate from styles.css because these devices, the overlaid hero, the
+ * evidence strip, the numbered method columns and the dark traceability band, appear
+ * on the homepage only. Everything is built from the tokens declared in
  * styles.css so the palette and typography stay consistent with the workspace.
  *
  * The page is a stack of full-bleed bands in a fixed rhythm: dark utility strip,

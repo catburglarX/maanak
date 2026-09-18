@@ -62,7 +62,7 @@ function buildHeader() {
   // The logo artwork already sets the MAANAK wordmark, so no text name is repeated
   // next to it.
   const brand = el('a', { class: 'brand', href: '/index.html' }, [
-    el('img', { src: '/assets/maanak-logo.svg', alt: 'Maanak — home' }),
+    el('img', { src: '/assets/maanak-logo.svg', alt: 'Maanak home' }),
   ]);
   const nav = el('nav', { class: 'site-nav', 'aria-label': 'Primary' });
   for (const [href, label] of PUBLIC_LINKS) {

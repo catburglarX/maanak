@@ -2,7 +2,7 @@
 import { requireAuth, can } from '../workspace.js';
 import { mountAppChrome } from '../layout.js';
 import { api, ApiError } from '../api.js';
-import { $, el, clear, tag, fmtDay, labelize, setStatus, showError, fillSelect } from '../util.js';
+import { $, el, clear, tag, fmtDay, labelize, setStatus, showError, fillSelect, NOT_RECORDED } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 import { openDialog } from '../dialog.js';
 
@@ -94,13 +94,13 @@ function renderGovernance(box) {
 
   const row = el('div', { class: 'btn-row' });
   let any = false;
-  if (can('rule.author') || can('rule.review') || can('rule.approve')) {
+  if (can('rule.update') || can('rule.submit') || can('rule.approve')) {
     any = true;
     const b = el('button', { class: 'btn', type: 'button', text: 'Change status' });
     b.addEventListener('click', changeStatus);
     row.appendChild(b);
   }
-  if (can('rule.approve') || can('rule.author')) {
+  if (can('rule.approve') || can('rule.simulate')) {
     any = true;
     const b = el('button', { class: 'btn', type: 'button', text: rule.legal_authority_confirmed ? 'Update legal authority' : 'Record legal authority' });
     b.addEventListener('click', legalAuthority);
@@ -197,10 +197,10 @@ function renderSim(res) {
   for (const s of scenarios) {
     const pass = s.passed === true;
     tbody.appendChild(el('tr', {}, [
-      el('th', { scope: 'row', text: s.name || s.label || '—' }),
+      el('th', { scope: 'row', text: s.name || s.label || NOT_RECORDED }),
       el('td', {}, [tag(pass ? 'confirmed' : 'rejected', pass ? 'Pass' : 'Fail')]),
-      el('td', { text: s.expected_outcome || '—' }),
-      el('td', { text: s.actual_outcome || s.outcome || '—' }),
+      el('td', { text: s.expected_outcome || NOT_RECORDED }),
+      el('td', { text: s.actual_outcome || s.outcome || NOT_RECORDED }),
     ]));
   }
   table.appendChild(tbody);

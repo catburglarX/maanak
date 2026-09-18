@@ -61,7 +61,7 @@ function render() {
 
 function renderNotices(box) {
   const sec = el('section', {}, [el('h2', { text: `Notices (${(kase.notices || []).length})` })]);
-  if (can('case.manage_notices')) {
+  if (can('notice.issue')) {
     const prep = el('button', { class: 'btn', type: 'button', text: 'Prepare notice' });
     prep.addEventListener('click', prepareNotice);
     sec.appendChild(el('div', { class: 'btn-row mb-075' }, [prep]));
@@ -75,7 +75,7 @@ function renderNotices(box) {
 function renderNotice(n) {
   const wrap = el('div', { class: 'panel' });
   wrap.appendChild(el('div', { class: 'between' }, [
-    el('h3', { text: `${vlabel('notice_types', n.notice_type)} — ${n.reference}` }),
+    el('h3', { text: `${vlabel('notice_types', n.notice_type)} ${n.reference}` }),
     n.is_frozen ? tag('active', 'Frozen') : tag('draft', 'Draft'),
   ]));
   const dl = el('dl', { class: 'defs' });
@@ -85,7 +85,7 @@ function renderNotice(n) {
   add('Delivery', n.delivery_method ? `${vlabel('delivery_methods', n.delivery_method)} on ${fmtDate(n.delivered_at)}` : null);
   add('Response due', n.response_due_on ? fmtDay(n.response_due_on) : null);
   add('Response received', n.response_received_at ? fmtDate(n.response_received_at) : null);
-  add('Withdrawn', n.withdrawn_at ? `${fmtDate(n.withdrawn_at)} — ${n.withdrawn_reason || ''}` : null);
+  add('Withdrawn', n.withdrawn_at ? `${fmtDate(n.withdrawn_at)}${n.withdrawn_reason ? `. Reason: ${n.withdrawn_reason}` : ''}` : null);
   wrap.appendChild(dl);
 
   if (n.response_summary) wrap.appendChild(el('div', { class: 'notice notice-info' }, [el('p', {}, [el('strong', { text: 'Response: ' }), document.createTextNode(n.response_summary)])]));
@@ -99,7 +99,7 @@ function renderNotice(n) {
     ]));
   }
 
-  if (can('case.manage_notices')) {
+  if (can('notice.issue')) {
     const row = el('div', { class: 'btn-row mt-half' });
     if (!n.issued_at) { const b = el('button', { class: 'btn btn-sm', type: 'button', text: 'Issue' }); b.addEventListener('click', () => issueNotice(n)); row.appendChild(b); }
     if (n.issued_at && !n.delivered_at) { const b = el('button', { class: 'btn btn-sm', type: 'button', text: 'Record delivery' }); b.addEventListener('click', () => deliverNotice(n)); row.appendChild(b); }
@@ -113,14 +113,14 @@ function renderNotice(n) {
 function renderTransitions(box) {
   const transitions = kase.available_transitions || [];
   if (!transitions.length) return;
-  const sec = el('section', { class: 'panel' }, [el('h2', { text: 'State' })]);
+  const sec = el('section', { class: 'panel' }, [el('h2', { text: 'Next step' })]);
   const row = el('div', { class: 'transition-list' });
   for (const t of transitions) {
     const blocked = Array.isArray(t.blocked_by) && t.blocked_by.length > 0;
-    const btn = el('button', { class: `btn btn-sm ${blocked ? 'blocked' : ''}`, type: 'button', disabled: blocked, 'aria-disabled': String(blocked), text: t.label || labelize(t.target_state) });
+    const btn = el('button', { class: 'btn btn-sm', type: 'button', disabled: blocked, 'aria-disabled': String(blocked), text: t.label || labelize(t.target_state) });
     if (!blocked) btn.addEventListener('click', () => doTransition(t));
-    const w = el('div', {}, [btn]);
-    if (blocked) w.appendChild(el('span', { class: 'small muted', text: `Blocked: ${t.blocked_by.join('; ')}` }));
+    const w = el('div', { class: blocked ? 'transition blocked' : 'transition' }, [btn]);
+    if (blocked) w.appendChild(el('span', { class: 'blocked-reason', text: t.blocked_by.join(' ') }));
     row.appendChild(w);
   }
   sec.appendChild(row);
@@ -131,8 +131,8 @@ function renderActions(box) {
   const sec = el('section', { class: 'panel' }, [el('h2', { text: 'Actions' })]);
   const row = el('div', { class: 'btn-row' });
   let any = false;
-  if (can('case.record_outcome') || can('case.manage')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Record outcome' }); b.addEventListener('click', recordOutcome); row.appendChild(b); }
-  if (can('case.manage')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Add event' }); b.addEventListener('click', addEvent); row.appendChild(b); }
+  if (can('case.update')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Record outcome' }); b.addEventListener('click', recordOutcome); row.appendChild(b); }
+  if (can('case.update')) { any = true; const b = el('button', { class: 'btn', type: 'button', text: 'Add event' }); b.addEventListener('click', addEvent); row.appendChild(b); }
   if (!any) sec.appendChild(el('p', { class: 'muted', text: 'You do not have permission to act on this case.' }));
   else sec.appendChild(row);
   box.appendChild(sec);

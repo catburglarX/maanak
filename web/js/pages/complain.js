@@ -93,7 +93,7 @@ function showSuccess(res) {
     ['State', res.state],
     ['Submitted', fmtDay(res.submitted_at)],
     ['Attachments stored', String(res.attachments_stored)],
-    ['Status lookup available', res.status_lookup_available ? 'Yes — use your reference and contact detail' : 'No — you did not provide a contact detail'],
+    ['Status lookup available', res.status_lookup_available ? 'Yes. Use this reference together with the contact detail you gave.' : 'No. You did not give a contact detail, so there is nothing to check the reference against.'],
   ];
   if (res.message) rows.push(['Note', res.message]);
   for (const [k, v] of rows) { dl.appendChild(el('dt', { text: k })); dl.appendChild(el('dd', { text: v })); }

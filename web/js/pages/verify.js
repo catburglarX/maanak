@@ -1,7 +1,7 @@
 // Public report verification. Reads ?report= (and ?code=) from the query so a
 // printed/QR URL works, and verifies content integrity honestly.
 import { api, ApiError } from '../api.js';
-import { $, el, clear, setStatus, fmtDate, tag } from '../util.js';
+import { $, el, clear, setStatus, fmtDate, tag, NOT_RECORDED } from '../util.js';
 
 const form = $('#verify-form');
 const statusRegion = $('#form-status');
@@ -59,16 +59,16 @@ function render(res) {
 
   const dl = el('dl', { class: 'defs' });
   const add = (k, v) => { dl.appendChild(el('dt', { text: k })); dl.appendChild(el('dd', {}, [typeof v === 'string' ? document.createTextNode(v) : v])); };
-  add('Report reference', el('span', { class: 'mono', text: res.report_reference || '—' }));
+  add('Report reference', el('span', { class: 'mono', text: res.report_reference || NOT_RECORDED }));
   if (res.verification_code) add('Verification code', el('span', { class: 'mono', text: res.verification_code }));
   add('Status', tag(res.state, res.state));
   if (res.revision !== undefined && res.revision !== null) add('Revision', String(res.revision));
   add('Issued', fmtDate(res.issued_at));
-  add('Issuing workspace', res.issuing_workspace || '—');
+  add('Issuing workspace', res.issuing_workspace || NOT_RECORDED);
   if (res.jurisdiction) add('Jurisdiction', res.jurisdiction);
   if (res.document_hash) add('Document hash', el('span', { class: 'mono small', text: `${res.hash_algorithm || 'hash'}: ${res.document_hash}` }));
   if (res.withdrawn_at) add('Withdrawn', fmtDate(res.withdrawn_at));
-  if (res.superseded) add('Superseded', 'Yes — a newer revision exists');
+  if (res.superseded) add('Superseded', 'Yes. A newer revision of this report exists.');
   if (res.signature_status) add('Signature status', res.signature_status);
 
   const box = el('div', { class: 'panel-white' }, [el('h2', { text: 'Report verification' }), dl]);

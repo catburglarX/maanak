@@ -2,7 +2,7 @@
 import { requireAuth, can } from '../workspace.js';
 import { mountAppChrome, createRegister } from '../layout.js';
 import { api, ApiError } from '../api.js';
-import { $, el, tag, fmtDay, setStatus } from '../util.js';
+import { $, el, tag, fmtDay, setStatus, NOT_RECORDED } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 import { reasonDialog } from '../dialog.js';
 
@@ -22,8 +22,8 @@ async function main() {
     columns: [
       { label: 'Reference', render: (r) => el('span', {}, [document.createTextNode(`${r.reference} `), el('span', { class: 'small muted', text: `rev ${r.revision}` })]) },
       { label: 'State', render: (r) => tag(r.state, labelFor(vocab.report_states, r.state)) },
-      { label: 'Inspection', render: (r) => r.inspection_id ? el('a', { href: `/app/inspection.html?id=${encodeURIComponent(r.inspection_id)}`, text: r.inspection_reference || 'View' }) : '—' },
-      { label: 'Product', render: (r) => r.product || '—' },
+      { label: 'Inspection', render: (r) => r.inspection_id ? el('a', { href: `/app/inspection.html?id=${encodeURIComponent(r.inspection_id)}`, text: r.inspection_reference || 'View' }) : NOT_RECORDED },
+      { label: 'Product', render: (r) => r.product || NOT_RECORDED },
       { label: 'Issued', render: (r) => fmtDay(r.issued_at) },
       { label: 'Documents', render: (r) => renderDocs(r) },
     ],

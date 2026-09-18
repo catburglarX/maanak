@@ -2,7 +2,7 @@
 import { requireAuth, can } from '../workspace.js';
 import { mountAppChrome, createRegister } from '../layout.js';
 import { api, ApiError } from '../api.js';
-import { $, el, clear, tag, fmtDate, labelize, fillSelect, setStatus, applyFieldErrors, clearFieldErrors } from '../util.js';
+import { $, el, clear, tag, fmtDate, labelize, fillSelect, setStatus, applyFieldErrors, clearFieldErrors, NOT_RECORDED } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 import { openDialog, reasonDialog, confirmDialog } from '../dialog.js';
 
@@ -26,7 +26,7 @@ async function main() {
       { label: 'Name', render: (u) => u.name },
       { label: 'Email', render: (u) => u.email },
       { label: 'Role', render: (u) => tag(u.is_active ? 'active' : 'draft', labelFor(vocab.roles, u.role)) },
-      { label: 'Jurisdiction', render: (u) => u.jurisdiction_name || u.jurisdiction_code || '—' },
+      { label: 'Jurisdiction', render: (u) => u.jurisdiction_name || u.jurisdiction_code || NOT_RECORDED },
       { label: 'Status', render: (u) => u.locked ? tag('rejected', 'Locked') : (u.is_active ? tag('confirmed', 'Active') : tag('grey', 'Inactive')) },
       { label: 'Last login', render: (u) => u.last_login_at ? fmtDate(u.last_login_at) : 'Never' },
       { label: 'Manage', render: (u) => renderRowActions(u) },
@@ -124,7 +124,7 @@ async function editUser(u) {
 
 async function viewSessions(u) {
   const body = el('div', {}, [el('p', { text: 'Loading sessions…' })]);
-  const dlg = openDialog({ title: `Sessions — ${u.name}`, body, actions: [{ label: 'Close', value: null }] });
+  const dlg = openDialog({ title: `Sessions: ${u.name}`, body, actions: [{ label: 'Close', value: null }] });
   async function refresh() {
     clear(body);
     try {
@@ -140,8 +140,8 @@ async function viewSessions(u) {
       const ul = el('ul', {});
       for (const s of items) {
         ul.appendChild(el('li', {}, [
-          document.createTextNode(`${s.ip_address || 'unknown IP'} — ${s.user_agent || 'unknown agent'} `),
-          el('span', { class: 'small muted', text: `last seen ${s.last_seen_at ? fmtDate(s.last_seen_at) : '—'}` }),
+          document.createTextNode(`${s.ip_address || 'unknown IP'} using ${s.user_agent || 'an unidentified browser'} `),
+          el('span', { class: 'small muted', text: `last seen ${s.last_seen_at ? fmtDate(s.last_seen_at) : NOT_RECORDED}` }),
         ]));
       }
       body.appendChild(ul);

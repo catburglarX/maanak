@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Inspection — Maanak workspace</title>
+  <title>Inspection · Maanak workspace</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/workspace.css">
@@ -44,9 +44,14 @@
                 <input type="file" id="up-file" name="file" accept="image/jpeg,image/png,image/webp" required aria-required="true">
               </div>
               <div class="field self-end">
-                <button type="submit" class="btn btn-primary" id="up-btn">Upload &amp; analyse</button>
+                <button type="button" class="btn" id="up-camera">Take a photograph</button>
+              </div>
+              <div class="field self-end">
+                <button type="submit" class="btn btn-primary" id="up-btn">Upload and read</button>
               </div>
             </div>
+            <p class="hint" id="up-camera-hint"></p>
+            <div id="up-chosen" class="status-region" aria-live="polite"></div>
             <div id="up-quality"></div>
             <div id="jobs"></div>
           </form>
@@ -65,6 +70,7 @@
                 <button type="button" class="btn btn-sm" id="rotate" aria-label="Rotate 90 degrees">Rotate</button>
                 <button type="button" class="btn btn-sm" id="reset-view">Reset</button>
                 <button type="button" class="btn btn-sm" id="toggle-ocr" aria-pressed="false">Raw OCR</button>
+                <a class="btn btn-sm" id="download-original" data-permission="evidence.download_original" hidden download>Original file</a>
               </div>
               <div class="viewer-stage" id="viewer-stage">
                 <div class="viewer-canvas-wrap" id="canvas-wrap">
@@ -87,32 +93,41 @@
           </div>
         </section>
 
-        <!-- Findings -->
+        <!-- Findings. The check summary sits directly above the findings it counts,
+             in the flow of the record, rather than in a bar pinned over the page. -->
         <section aria-labelledby="findings-h">
-          <h2 id="findings-h">Findings</h2>
+          <div class="between">
+            <h2 id="findings-h">Findings</h2>
+            <button type="button" class="btn btn-sm" id="run-checks" data-permission="checks.run" hidden>Run checks</button>
+          </div>
+          <div id="findings-summary" aria-live="polite"></div>
           <div id="findings"></div>
         </section>
 
-        <!-- The decision belongs in the page, not in the sticky bar: it is a form to
+        <!-- The decision belongs in the page, not in a floating bar: it is a form to
              be read and filled, and a bar tall enough to hold it covers the evidence
              the officer is deciding on. -->
         <section aria-labelledby="decision-h">
           <h2 id="decision-h">Decision</h2>
           <div id="decision-mount"></div>
         </section>
-      </div>
 
-      <!-- Sticky action bar: status and actions only -->
-      <div class="action-bar" id="action-bar" hidden>
-        <div class="container">
-          <div class="between">
-            <div class="summary-line" id="findings-summary" aria-live="polite"></div>
-            <div class="btn-row">
-              <button type="button" class="btn" id="run-checks" data-permission="inspection.run_checks" hidden>Run checks</button>
-            </div>
-          </div>
+        <!-- The report, and the case that can follow it. Both existed in the API and in
+             the seeder but had no control anywhere in the workspace, so the officer
+             workflow stopped at the recorded decision. -->
+        <section aria-labelledby="report-h" id="report-section" hidden>
+          <h2 id="report-h">Report</h2>
+          <div id="report-status" class="status-region" aria-live="polite"></div>
+          <div id="report-mount"></div>
+        </section>
+
+        <!-- Where the record goes next. Empty for a frozen inspection, and the
+             heading is removed with it rather than left standing over nothing. -->
+        <section aria-labelledby="next-h" id="next-section" hidden>
+          <h2 id="next-h">Next step</h2>
+          <p class="workspace-sub" id="next-sub"></p>
           <div class="transition-list" id="transitions"></div>
-        </div>
+        </section>
       </div>
     </main>
   </div>

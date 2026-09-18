@@ -1,4 +1,4 @@
-// Maanak API client — cookie-based auth, CSRF header on unsafe methods,
+// Maanak API client: cookie-based auth, CSRF header on unsafe methods,
 // single refresh-and-retry on 401, structured error surface.
 
 const BASE = '/api/v1';
@@ -51,7 +51,7 @@ async function doFetch(method, path, { body, headers, isForm } = {}) {
   }
   if (body !== undefined) {
     if (isForm) {
-      opts.body = body; // FormData — let the browser set the boundary.
+      opts.body = body; // FormData: let the browser set the boundary.
     } else {
       opts.headers['Content-Type'] = 'application/json';
       opts.body = JSON.stringify(body);

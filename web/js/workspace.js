@@ -1,7 +1,7 @@
 // Workspace bootstrap: verifies session, renders the signed-in user,
 // wires sign-out, exposes permission checks, highlights current nav.
 import { api, auth, ApiError } from './api.js';
-import { el, $, clear } from './util.js';
+import { el, $, clear, labelize } from './util.js';
 import { initChrome } from './chrome.js';
 
 let profile = null;
@@ -16,7 +16,7 @@ function renderUserBar(bar) {
   if (!profile) return;
   bar.appendChild(el('div', { class: 'who' }, [
     el('span', { class: 'name', text: profile.name }),
-    el('span', { class: 'role', text: [labelRole(profile.role), profile.jurisdiction_name].filter(Boolean).join(' · ') }),
+    el('span', { class: 'role', text: [labelize(profile.role), profile.jurisdiction_name].filter(Boolean).join(' · ') }),
   ]));
   const settings = el('a', { href: '/app/account.html', class: 'btn btn-sm', text: 'Account' });
   const out = el('button', { class: 'btn btn-sm', type: 'button', text: 'Sign out' });
@@ -29,11 +29,6 @@ function renderUserBar(bar) {
   bar.appendChild(out);
 }
 
-function labelRole(role) {
-  if (!role) return '';
-  return String(role).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 function highlightNav() {
   const path = location.pathname.split('/').pop();
   document.querySelectorAll('.app-nav a').forEach((a) => {
@@ -42,11 +37,22 @@ function highlightNav() {
   });
 }
 
-// Hide any element whose data-permission is not held by the user.
+// Show or hide every element that declares a required permission.
+//
+// This used to hide only. Elements are written into the markup with `hidden` so a
+// forbidden control never flashes on screen before the profile arrives, which meant a
+// permitted control was never revealed either: the evidence upload panel on the
+// inspection screen declared data-permission="evidence.upload" and stayed hidden for
+// everyone, including an inspector who holds it. Pages that happened to un-hide their
+// own button in JavaScript worked; the one section that relied on this did not.
+//
+// Both directions are now driven from the profile, so `hidden` in the markup means
+// "hidden until the permission is confirmed" rather than "hidden forever".
 export function applyPermissionVisibility(root = document) {
   root.querySelectorAll('[data-permission]').forEach((node) => {
     const perm = node.getAttribute('data-permission');
-    if (perm && !can(perm)) node.hidden = true;
+    if (!perm) return;
+    node.hidden = !can(perm);
   });
 }
 

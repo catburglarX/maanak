@@ -1,5 +1,5 @@
 // Shared DOM helpers, formatting, and status-tag rendering.
-// No innerHTML with untrusted data — build nodes and use textContent.
+// No innerHTML with untrusted data. Build nodes and use textContent.
 
 import { ApiError } from './api.js';
 
@@ -30,14 +30,46 @@ export function el(tag, attrs = {}, children = []) {
 
 export function clear(node) { while (node && node.firstChild) node.removeChild(node.firstChild); }
 
+// What to print where a record holds no value. A dash in a cell tells the reader
+// nothing and a screen reader announces it as punctuation or skips it, so the absence
+// is stated in words instead.
+export const NOT_RECORDED = 'Not recorded';
+
+// Singular or plural form of a noun for a count, so no message has to fall back to
+// the "1 image(s)" shorthand.
+export function plural(noun, count) {
+  if (count === 1) return noun;
+  if (/[^aeiou]y$/.test(noun)) return `${noun.slice(0, -1)}ies`;
+  if (/(s|x|z|ch|sh)$/.test(noun)) return `${noun}es`;
+  return `${noun}s`;
+}
+
+// "1 image", "3 images", "no images".
+export function counted(count, noun, { zero = 'no' } = {}) {
+  if (count === 0 && zero !== null) return `${zero} ${plural(noun, 0)}`;
+  return `${count} ${plural(noun, count)}`;
+}
+
+// Brand and product name on one line. Joining them unconditionally produced
+// "Riverside Riverside Iodised Salt 1 kg" for records whose name already carries the
+// brand, so a brand at the front of the name is not repeated.
+export function productLabel(p) {
+  if (!p) return NOT_RECORDED;
+  const name = (p.name || '').trim();
+  const brand = (p.brand || '').trim();
+  if (!name) return brand || NOT_RECORDED;
+  if (!brand || name.toLowerCase().startsWith(brand.toLowerCase())) return name;
+  return `${brand} ${name}`;
+}
+
 export function fmtDate(iso) {
-  if (!iso) return '—';
+  if (!iso) return NOT_RECORDED;
   const d = new Date(iso);
   if (isNaN(d)) return String(iso);
   return d.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 }
 export function fmtDay(iso) {
-  if (!iso) return '—';
+  if (!iso) return NOT_RECORDED;
   const d = new Date(iso);
   if (isNaN(d)) return String(iso);
   return d.toLocaleDateString('en-IN', { dateStyle: 'medium' });
@@ -91,10 +123,41 @@ export function tag(value, label) {
   return el('span', { class: `tag ${cls}`, 'data-glyph': glyph, text: label || labelize(value) });
 }
 
-// Human label fallback when no vocabulary label is provided.
+// Values whose mechanical label is wrong: acronyms, hyphenated compounds, and a few
+// phrases that read better reordered.
+//
+// This mirrors OVERRIDES in api/app/domain/labels.py, which is the authority. Most
+// labels arrive from /reference/vocabulary and need nothing here, but a few values are
+// rendered without a vocabulary lookup: a role on the account page, an actor role in
+// the audit trail. A unit test compares the two tables, so they cannot drift.
+export const LABEL_OVERRIDES = {
+  mrp: 'MRP',
+  mrp_close_up: 'MRP close-up',
+  mrp_overcharge: 'MRP overcharge',
+  fssai_licence: 'FSSAI licence',
+  ocr_input: 'OCR input',
+  net_quantity_close_up: 'Net quantity close-up',
+  date_marking_close_up: 'Date marking close-up',
+  non_compliant: 'Non-compliant',
+  follow_up_inspection: 'Follow-up inspection',
+  show_cause: 'Show-cause notice',
+  ecommerce_listing: 'E-commerce listing',
+  veg_nonveg_mark: 'Veg or non-veg mark',
+  side_panel_left: 'Left side panel',
+  side_panel_right: 'Right side panel',
+  admin: 'Administrator',
+  rule_admin: 'Rule administrator',
+  expired_or_date_issue: 'Expired or wrong date',
+};
+
+// Human label when the API supplies none. Sentence case, not title case: a label reads
+// as part of the page, and "Principal Display Panel" reads as a headline.
 export function labelize(v) {
-  if (v === null || v === undefined || v === '') return '—';
-  return String(v).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  if (v === null || v === undefined || v === '') return NOT_RECORDED;
+  const key = String(v);
+  if (LABEL_OVERRIDES[key]) return LABEL_OVERRIDES[key];
+  const words = key.replace(/_/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
 // Loading / empty / error state helpers into a container.

@@ -1,4 +1,4 @@
-/* Maanak — institutional, restrained design system. */
+/* Maanak: institutional, restrained design system. */
 
 :root {
   --ink: #101820;
@@ -19,7 +19,7 @@
   --muted: #5c5c56;
   --muted-strong: #46463f;
 
-  /* Meaning colours — always paired with text/glyph, never colour alone.
+  /* Meaning colours, always paired with text or a glyph, never colour alone.
    *
    * The amber pair was #8a5a00 on #f7efd9, a mustard-on-cream that read as a warning
    * card. It is now neutral slate, which is also the more honest signal: the states it
@@ -74,7 +74,7 @@ a:hover { color: var(--accent-ink); }
 small, .small { font-size: 0.82rem; color: var(--muted); }
 code, pre, .mono { font-family: var(--mono); }
 
-/* Focus — visible, >= 3:1, never removed. */
+/* Focus: visible, at least 3:1, never removed. */
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
@@ -97,7 +97,7 @@ code, pre, .mono { font-family: var(--mono); }
 .container { max-width: var(--maxw); margin: 0 auto; padding: 0 1.25rem; }
 .narrow { max-width: 760px; }
 
-/* Utility strip — a thin institutional bar above the navigation. Shared by every
+/* Utility strip: a thin institutional bar above the navigation. Shared by every
  * public page so the chrome is identical wherever the visitor lands. */
 .utility {
   background: var(--ink);
@@ -314,7 +314,7 @@ legend { font-weight: 600; padding: 0 0.4rem; }
 .panel-white { background: var(--white); border: 1px solid var(--rule); border-radius: var(--radius); padding: 1rem 1.15rem; margin: 0 0 1.25rem; }
 .section-rule { border: 0; border-top: 1px solid var(--rule); margin: 1.5rem 0; }
 
-/* Tables — dense registers */
+/* Tables: dense registers */
 .table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--radius); }
 table.register { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
 table.register caption { text-align: left; font-weight: 600; padding: 0.6rem 0.75rem; background: var(--panel); border-bottom: 1px solid var(--rule); }
@@ -323,7 +323,7 @@ table.register thead th { background: var(--panel-2); font-size: 0.78rem; text-t
 table.register tbody tr:hover { background: var(--panel); }
 table.register a { font-weight: 600; }
 
-/* Status labels — colour + text always paired */
+/* Status labels: colour and text always paired */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -451,6 +451,7 @@ table.register a { font-weight: 600; }
 .self-center { align-self: center; }
 .self-end { align-self: flex-end; }
 .pad-2 { padding: 2rem; }
+.mt-0 { margin-top: 0; }
 .mt-half { margin-top: 0.5rem; }
 .mb-half { margin-bottom: 0.5rem; }
 .mb-075 { margin-bottom: 0.75rem; }
@@ -468,7 +469,7 @@ table.register a { font-weight: 600; }
 .feature { border-top: 3px solid var(--accent); padding-top: 0.6rem; }
 .feature h3 { margin-top: 0; }
 
-/* Overview metrics — real counts only */
+/* Overview metrics: real counts only */
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin: 1rem 0; }
 .metric { border: 1px solid var(--rule); border-radius: var(--radius); padding: 0.9rem 1rem; background: var(--panel); }
 .metric .num { font-family: var(--serif); font-size: 2rem; font-weight: 700; display: block; }

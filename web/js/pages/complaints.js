@@ -1,7 +1,7 @@
-// Complaint triage queue — priority ordered, shows priority reason.
+// Complaint triage queue, priority ordered, showing the reason for each priority.
 import { requireAuth } from '../workspace.js';
 import { mountAppChrome, createRegister } from '../layout.js';
-import { $, el, tag, fmtDay } from '../util.js';
+import { $, el, tag, fmtDay, NOT_RECORDED } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 
 let vocab = null;
@@ -28,11 +28,11 @@ async function main() {
       { label: 'Reference', render: (it) => it.reference },
       { label: 'Priority', render: (it) => el('span', {}, [
         el('strong', { text: String(it.priority ?? 0) }),
-        it.priority_reason ? el('span', { class: 'small muted', text: ` — ${it.priority_reason}` }) : null,
+        it.priority_reason ? el('span', { class: 'small muted', text: ` ${it.priority_reason}` }) : null,
       ]) },
       { label: 'State', render: (it) => tag(it.state, labelFor(vocab.complaint_states, it.state)) },
       { label: 'Category', render: (it) => labelFor(vocab.complaint_categories, it.category) },
-      { label: 'Product', render: (it) => it.product_name || '—' },
+      { label: 'Product', render: (it) => it.product_name || NOT_RECORDED },
       { label: 'Received', render: (it) => fmtDay(it.created_at) },
       { label: 'Assigned', render: (it) => it.assigned_officer_id ? 'Yes' : 'Unassigned' },
     ],

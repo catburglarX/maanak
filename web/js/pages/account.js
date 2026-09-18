@@ -2,7 +2,7 @@
 import { requireAuth, currentUser } from '../workspace.js';
 import { mountAppChrome } from '../layout.js';
 import { api, ApiError } from '../api.js';
-import { $, el, clear, fmtDate, labelize, setStatus, applyFieldErrors, clearFieldErrors } from '../util.js';
+import { $, el, clear, fmtDate, labelize, setStatus, applyFieldErrors, clearFieldErrors, NOT_RECORDED } from '../util.js';
 import { confirmDialog } from '../dialog.js';
 
 async function main() {
@@ -18,7 +18,7 @@ async function main() {
 function renderProfile(me) {
   const box = $('#profile');
   const dl = el('dl', { class: 'defs' });
-  const add = (k, v) => { dl.append(el('dt', { text: k }), el('dd', { text: v || '—' })); };
+  const add = (k, v) => { dl.append(el('dt', { text: k }), el('dd', { text: v || NOT_RECORDED })); };
   add('Name', me.name);
   add('Email', me.email);
   add('Role', labelize(me.role));
@@ -78,8 +78,8 @@ async function loadSessions() {
       });
       tbody.appendChild(el('tr', {}, [
         el('th', { scope: 'row', text: s.user_agent || 'unknown' }),
-        el('td', { text: s.ip_address || '—' }),
-        el('td', { text: s.last_seen_at ? fmtDate(s.last_seen_at) : '—' }),
+        el('td', { text: s.ip_address || NOT_RECORDED }),
+        el('td', { text: s.last_seen_at ? fmtDate(s.last_seen_at) : NOT_RECORDED }),
         el('td', {}, [revoke]),
       ]));
     }

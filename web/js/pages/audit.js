@@ -2,7 +2,7 @@
 import { requireAuth } from '../workspace.js';
 import { mountAppChrome, createRegister } from '../layout.js';
 import { api, ApiError } from '../api.js';
-import { $, el, clear, fmtDate, labelize } from '../util.js';
+import { $, el, clear, fmtDate, labelize, counted, NOT_RECORDED } from '../util.js';
 
 async function main() {
   mountAppChrome();
@@ -36,7 +36,7 @@ async function main() {
       { label: 'Action', render: (e) => labelize(e.action) },
       { label: 'Entity', render: (e) => `${labelize(e.entity_type)} ${e.entity_id ? e.entity_id.slice(0, 8) : ''}`.trim() },
       { label: 'Actor', render: (e) => e.actor_is_public ? 'Public' : (e.actor_email || (e.actor_role ? labelize(e.actor_role) : 'System')) },
-      { label: 'Reason', render: (e) => e.reason || '—' },
+      { label: 'Reason', render: (e) => e.reason || NOT_RECORDED },
       { label: 'Recorded', render: (e) => fmtDate(e.recorded_at) },
     ],
   });
@@ -57,7 +57,7 @@ async function verifyChain() {
     const box = el('div', { class: intact ? 'notice notice-ok' : 'notice notice-error', role: intact ? 'status' : 'alert' });
     box.appendChild(el('p', {}, [
       el('strong', { text: intact ? 'Audit chain intact. ' : 'Audit chain is NOT intact. ' }),
-      document.createTextNode(`${res.events_checked ?? 0} event(s) checked.`),
+      document.createTextNode(`${counted(res.events_checked ?? 0, 'event')} checked.`),
     ]));
     if (!intact) {
       if (res.first_broken_sequence != null) box.appendChild(el('p', { text: `First broken sequence: ${res.first_broken_sequence}.` }));

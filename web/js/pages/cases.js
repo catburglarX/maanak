@@ -1,7 +1,7 @@
 // Cases register.
 import { requireAuth } from '../workspace.js';
 import { mountAppChrome, createRegister } from '../layout.js';
-import { $, el, tag, fmtDay } from '../util.js';
+import { $, el, tag, fmtDay, NOT_RECORDED } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 
 let vocab = null;
@@ -25,8 +25,8 @@ async function main() {
     columns: [
       { label: 'Reference', render: (c) => c.reference },
       { label: 'State', render: (c) => tag(c.state, labelFor(vocab.case_states, c.state)) },
-      { label: 'Respondent', render: (c) => c.respondent_name || '—' },
-      { label: 'Subject', render: (c) => c.subject || '—' },
+      { label: 'Respondent', render: (c) => c.respondent_name || NOT_RECORDED },
+      { label: 'Subject', render: (c) => c.subject || NOT_RECORDED },
       { label: 'Notices', render: (c) => String((c.notices || []).length) },
       { label: 'Opened', render: (c) => fmtDay(c.created_at) },
     ],

@@ -1,6 +1,6 @@
 // Public complaint status lookup.
 import { api, ApiError } from '../api.js';
-import { $, el, clear, setStatus, fmtDate, tag } from '../util.js';
+import { $, el, clear, setStatus, fmtDate, tag, NOT_RECORDED } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 
 const form = $('#status-form');
@@ -41,7 +41,7 @@ function render(res) {
   add('Status', tag(res.state, labelFor(vocab.complaint_states, res.state)));
   if (res.state_description) add('What this means', res.state_description);
   add('Category', labelFor(vocab.complaint_categories, res.category));
-  add('Product', res.product_name || '—');
+  add('Product', res.product_name || NOT_RECORDED);
   add('Submitted', fmtDate(res.submitted_at));
   if (res.resolved_at) add('Resolved', fmtDate(res.resolved_at));
   if (res.resolution_note) add('Resolution note', res.resolution_note);

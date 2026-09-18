@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Accessibility statement — Maanak</title>
+  <title>Accessibility statement · Maanak</title>
   <meta name="description" content="Maanak's conformance claim against WCAG 2.2 level AA, how it was measured, and the barriers that remain.">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">
@@ -66,9 +66,10 @@
             <tr>
               <td>2.4.11 Focus Not Obscured (Minimum)</td>
               <td>AA</td>
-              <td>Met on public pages. Measured: none of the twelve uses sticky or fixed
-                positioning. At risk in the workspace, where registers use a sticky table
-                header.</td>
+              <td>Met on public pages. Measured: none of the fourteen uses sticky or fixed
+                positioning. At risk in the workspace, where register tables keep a sticky
+                column header and the evidence viewer stays in view beside the readings it
+                belongs to.</td>
             </tr>
             <tr>
               <td>2.5.7 Dragging Movements</td>
@@ -78,7 +79,7 @@
             <tr>
               <td>2.5.8 Target Size (Minimum)</td>
               <td>AA</td>
-              <td>Met. Measured across all twelve public pages: zero targets below 24 by 24
+              <td>Met. Measured across all fourteen public pages: zero targets below 24 by 24
                 CSS pixels.</td>
             </tr>
             <tr>
@@ -105,7 +106,7 @@
       </div>
 
       <h2 id="scope">What the claim covers</h2>
-      <p>Twelve public pages, four workspace registers and the inspection review screen were
+      <p>Fourteen public pages, four workspace registers and the inspection review screen were
         measured. The workspace has fourteen screens, and the nine not listed have not been
         measured.</p>
       <p>The evidence review screen is the most complex thing here. It is now scanned, and the
@@ -114,7 +115,7 @@
       <h2 id="method">How it was measured</h2>
       <p>Three separate checks run against a real browser rather than against markup in
         isolation.</p>
-      <p>axe-core runs against seventeen pages: all twelve public pages, four workspace
+      <p>axe-core runs against nineteen pages: all fourteen public pages, four workspace
         registers, and the inspection review screen, which is reached by record id and so
         needs a real inspection in the workspace before it can be scanned at all. It is
         configured for WCAG 2.0, 2.1 and 2.2 at level A and AA together. The result is
@@ -136,7 +137,7 @@
       <p>Sticky and fixed positioning is enumerated on every public page, because that is what
         obscures a focused control under 2.4.11. This found a real defect: the policy pages had
         inherited the workspace's sticky table header, which serves a long register and does
-        nothing for a four-row table in a document. It was removed. All twelve public pages now
+        nothing for a four-row table in a document. It was removed. All fourteen public pages now
         report no sticky or fixed positioning at all.</p>
       <p>Keyboard operation was walked through by hand on the public forms and the sign-in
         flow.</p>
@@ -171,17 +172,20 @@
         each activation, and it is not built.</p>
 
       <h3>Sticky elements in the workspace may obscure focus (2.4.11, level AA)</h3>
-      <p>Workspace registers use a sticky table header so column names stay visible while
-        scrolling, and the inspection screen has a sticky action bar along the bottom. A focused
-        control scrolled beneath either could be hidden, which is what 2.4.11 prohibits. This
-        was found by enumerating computed positioning rather than by observing a failure, so it
-        is a credible risk and not a confirmed defect.</p>
-      <p>The action bar was made materially smaller during this work. It used to contain the
-        whole decision form, which made it about 500 pixels tall and left it covering the
-        evidence the officer was deciding on. The form is now an ordinary section in the page
-        and the bar holds only the finding tally and the actions.</p>
+      <p>Workspace register tables keep a sticky column header so the column names stay visible
+        while scrolling a long list, and the evidence viewer on the inspection screen stays in
+        view beside the readings it belongs to. A focused control scrolled beneath either could
+        be hidden, which is what 2.4.11 prohibits. This was found by enumerating computed
+        positioning rather than by observing a failure, so it is a credible risk and not a
+        confirmed defect.</p>
+      <p>The inspection screen also had a dark action bar pinned along the bottom. It began as a
+        bar roughly 500 pixels tall holding the whole decision form, which left it covering the
+        evidence the officer was deciding on. The form moved into the page, and the bar has since
+        gone too: the finding tally now sits directly above the findings it counts, and the state
+        actions sit at the end of the record. That removes a sticky element from the screen
+        rather than making it smaller.</p>
       <p>The same sticky header style had also reached the policy pages, where it was pointless,
-        and it has been removed from them. All twelve public pages now report no sticky or fixed
+        and it has been removed from them. All fourteen public pages now report no sticky or fixed
         positioning.</p>
 
       <h3>No feedback channel</h3>

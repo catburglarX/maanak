@@ -2,7 +2,7 @@
 import { requireAuth, can } from '../workspace.js';
 import { mountAppChrome } from '../layout.js';
 import { api, readiness } from '../api.js';
-import { $, el, clear, tag, showError, showEmpty, fmtDay, labelize } from '../util.js';
+import { $, el, clear, tag, showError, showEmpty, fmtDay, labelize, productLabel } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 
 async function totalFor(endpoint, params) {
@@ -75,7 +75,7 @@ async function renderMine() {
     table.appendChild(thead);
     const tbody = el('tbody');
     for (const it of items) {
-      const product = it.product ? [it.product.brand, it.product.name].filter(Boolean).join(' — ') : '—';
+      const product = productLabel(it.product);
       tbody.appendChild(el('tr', {}, [
         el('th', { scope: 'row' }, [el('a', { href: `/app/inspection.html?id=${encodeURIComponent(it.id)}`, text: it.reference })]),
         el('td', {}, [tag(it.state, vocab ? labelFor(vocab.inspection_states, it.state) : undefined)]),

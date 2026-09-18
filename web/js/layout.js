@@ -1,6 +1,6 @@
 // Workspace layout: injects the app header/nav, and a reusable paginated
 // register that fetches pages and renders rows.
-import { el, $, clear, showLoading, showEmpty, showError } from './util.js';
+import { el, $, clear, showLoading, showEmpty, showError, NOT_RECORDED } from './util.js';
 import { api } from './api.js';
 
 // The work an officer does every day. These carry the visual weight.
@@ -50,6 +50,38 @@ export function mountAppChrome() {
     el('div', { class: 'bar' }, [brand, nav, userBar]),
   ]);
   mount.replaceWith(header);
+  mountAppFooter();
+}
+
+// One line at the foot of every workspace screen.
+//
+// The workspace carried no statement of what Maanak is not. That claim is central to
+// the project and it appeared on the public pages and on every report, but an officer
+// working inside the application had to leave it to find either. Rendered here rather
+// than pasted into fourteen pages, so it cannot go missing from one of them: an
+// #app-footer div existed in overview.html alone and nothing ever filled it.
+function mountAppFooter() {
+  const shell = document.querySelector('.app-shell');
+  if (!shell || shell.querySelector('.app-footer')) return;
+  const placeholder = $('#app-footer');
+  const footer = el('footer', { class: 'app-footer' }, [
+    el('div', { class: 'container' }, [
+      el('p', {}, [
+        el('strong', { text: 'Maanak is not a government service.' }),
+        document.createTextNode(
+          ' It issues no enforcement action of its own, and every legal conclusion is '
+          + 'recorded against the officer who reached it.',
+        ),
+      ]),
+      el('nav', { 'aria-label': 'Standing notes' }, [
+        el('a', { href: '/legal-sources.html', text: 'What is verified' }),
+        el('a', { href: '/responsible-use.html', text: 'Responsible use' }),
+        el('a', { href: '/accessibility.html', text: 'Accessibility' }),
+      ]),
+    ]),
+  ]);
+  if (placeholder) placeholder.replaceWith(footer);
+  else shell.appendChild(footer);
 }
 
 // Reusable paginated register.
@@ -90,7 +122,7 @@ export function createRegister(container, opts) {
     for (const item of items) {
       const tr = el('tr');
       opts.columns.forEach((c, i) => {
-        const content = c.render ? c.render(item) : (item[c.key] ?? '—');
+        const content = c.render ? c.render(item) : (item[c.key] ?? NOT_RECORDED);
         const cell = el(i === 0 ? 'th' : 'td', i === 0 ? { scope: 'row' } : {});
         if (i === 0 && opts.rowHref) {
           cell.appendChild(el('a', { href: opts.rowHref(item) }, [typeof content === 'string' ? document.createTextNode(content) : content]));

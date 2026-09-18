@@ -2,7 +2,7 @@
 import { requireAuth, can } from '../workspace.js';
 import { mountAppChrome, createRegister } from '../layout.js';
 import { api, ApiError } from '../api.js';
-import { $, el, tag, fmtDay, setStatus } from '../util.js';
+import { $, el, tag, fmtDay, setStatus, NOT_RECORDED } from '../util.js';
 import { getVocabulary, labelFor } from '../chrome.js';
 import { confirmDialog } from '../dialog.js';
 
@@ -26,7 +26,7 @@ async function main() {
     rowHref: (r) => `/app/rule.html?id=${encodeURIComponent(r.id)}`,
     columns: [
       { label: 'Code', render: (r) => `${r.code} v${r.version}` },
-      { label: 'Title', render: (r) => r.title || '—' },
+      { label: 'Title', render: (r) => r.title || NOT_RECORDED },
       { label: 'Status', render: (r) => tag(r.status, labelFor(vocab.rule_statuses, r.status)) },
       { label: 'Legal authority', render: (r) => r.legal_authority_confirmed ? tag('confirmed', 'Confirmed') : tag('unable_to_determine', 'Not confirmed') },
       { label: 'Effective', render: (r) => r.effective_for_inspections ? 'Yes' : 'No' },
@@ -38,7 +38,7 @@ async function main() {
   register.reload();
 
   const seedBtn = $('#seed-rules');
-  if (can('rule.author')) {
+  if (can('rule.create')) {
     seedBtn.hidden = false;
     seedBtn.addEventListener('click', async () => {
       const ok = await confirmDialog('Seed baseline rules', 'This creates the baseline set of draft rules if they do not exist. Continue?', { confirmLabel: 'Seed' });

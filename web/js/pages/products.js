@@ -2,7 +2,7 @@
 import { requireAuth, can } from '../workspace.js';
 import { mountAppChrome, createRegister } from '../layout.js';
 import { api, ApiError } from '../api.js';
-import { $, el, fmtDay, labelize, fillSelect, setStatus, applyFieldErrors, clearFieldErrors } from '../util.js';
+import { $, el, fmtDay, labelize, fillSelect, setStatus, applyFieldErrors, clearFieldErrors, NOT_RECORDED } from '../util.js';
 import { getVocabulary } from '../chrome.js';
 import { openDialog } from '../dialog.js';
 
@@ -22,11 +22,11 @@ async function main() {
     params: () => ({ search: $('#f-search').value.trim(), barcode: $('#f-barcode').value.trim() }),
     rowHref: () => '#',
     columns: [
-      { label: 'Brand', render: (p) => p.brand || '—' },
-      { label: 'Name', render: (p) => p.name || '—' },
+      { label: 'Brand', render: (p) => p.brand || NOT_RECORDED },
+      { label: 'Name', render: (p) => p.name || NOT_RECORDED },
       { label: 'Category', render: (p) => labelize(p.commodity_category) },
-      { label: 'Net quantity', render: (p) => p.declared_net_quantity ? `${p.declared_net_quantity} ${p.declared_net_quantity_unit || ''}`.trim() : '—' },
-      { label: 'GTIN', render: (p) => p.primary_gtin || '—' },
+      { label: 'Net quantity', render: (p) => p.declared_net_quantity ? `${p.declared_net_quantity} ${p.declared_net_quantity_unit || ''}`.trim() : NOT_RECORDED },
+      { label: 'GTIN', render: (p) => p.primary_gtin || NOT_RECORDED },
       { label: 'Inspections', render: (p) => String(p.inspection_count ?? 0) },
       { label: 'Updated', render: (p) => fmtDay(p.updated_at) },
     ],
