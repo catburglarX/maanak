@@ -223,6 +223,13 @@ docker run --rm --network maanak_default -v "$PWD/api:/w" -w /w \
   -e BASE_URL=http://web:8080 maanak-browser:dev python scripts/measure_a11y.py
 docker run --rm --network maanak_default -v "$PWD/api:/w" -w /w \
   -e BASE_URL=http://web:8080 maanak-browser:dev python scripts/scan_tints.py --app
+
+# The whole officer workflow through the interface, from an empty inspection to an
+# opened case. Needs the seeded accounts and a label image to upload.
+docker compose run --rm --no-deps --user root -v "$PWD/api:/app" \
+  --entrypoint python api scripts/make_sample_label.py
+docker run --rm --network maanak_default -v "$PWD:/repo" -v "$PWD/api:/w" -w /w \
+  -e BASE_URL=http://web:8080 maanak-browser:dev python scripts/verify_officer_flow.py
 ```
 
 Each of the eight `verify_*` suites bootstraps its own workspace, so run
