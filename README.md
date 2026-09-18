@@ -251,7 +251,7 @@ Measured on the current tree:
 | `measure_a11y.py` | 0 axe violations across 14 public pages at WCAG 2.0/2.1/2.2 A and AA; 0 targets under 24×24; 0 sticky or fixed elements |
 | `scan_tints.py` | 0 warm-tinted surfaces across 24 pages at 3 breakpoints |
 | `check_links.py` | 0 broken links, 76 in-page anchors resolve |
-| `check_prose.py` | 0 machine-writing tells across 28 pages and 14 documents, 28,018 words |
+| `check_prose.py` | 0 machine-writing tells across 28 pages and 14 documents, 28,100 words |
 | pytest | 130 unit items, 5 live-stack items |
 | `quality.sh` | 119 files formatted, lint clean, mypy clean on 85 files |
 | `verify_package.sh` | 39 checks on the release archive |
@@ -352,6 +352,16 @@ accessibility, legal and user-acceptance testing.
 
 Setting `MAANAK_ENV=production` refuses to start while several of those remain unsafe. It
 checks what is technically checkable and cannot check the rest.
+
+---
+
+## Who built it
+
+[devpilotX](https://github.com/devpilotX) and [catburglarX](https://github.com/catburglarX).
+The repository is mirrored at
+[devpilotX/maanak](https://github.com/devpilotX/maanak) and
+[catburglarX/maanak](https://github.com/catburglarX/maanak), with both accounts holding
+write access to each. The two remotes carry the same history and the same commit hashes.
 
 ---
 
