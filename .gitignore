@@ -35,6 +35,7 @@ Thumbs.db
 _*.sh
 _*.py
 _*.txt
+_*.md
 test_output.txt
 full_test.txt
 sbom.json

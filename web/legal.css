@@ -53,10 +53,12 @@
   color: var(--ink);
 }
 
+/* Contents. Ruled top and bottom rather than set in a panel, so a legal document
+ * opens with typography instead of a tinted box. */
 .doc-toc {
-  background: var(--panel);
-  border: 1px solid var(--rule);
-  padding: 1.15rem 1.35rem;
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong);
+  padding: 1.15rem 0;
   margin: 0 0 2.5rem;
 }
 

@@ -79,7 +79,9 @@
   max-height: 62vh;
   min-height: 320px;
   background:
-    repeating-conic-gradient(#e6e3db 0% 25%, #efece4 0% 50%) 0 / 20px 20px;
+    /* Neutral grey checkerboard. It was beige (#e6e3db on #efece4), which tinted the
+     * area behind every evidence image. */
+    repeating-conic-gradient(#e4e4e4 0% 25%, #ededed 0% 50%) 0 / 20px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
