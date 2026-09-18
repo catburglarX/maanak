@@ -248,7 +248,7 @@ Measured on the current tree:
 | `verify_pipeline.py` | 56 checks |
 | `verify_workflow.py` | 117 checks |
 | `verify_matters.py` | 86 checks |
-| `verify_browser.py` | 59 checks, 0 axe violations on 8 pages |
+| `verify_browser.py` | 60 checks, 0 axe violations on 8 pages |
 | `verify_officer_flow.py` | 44 checks: the whole officer workflow driven through the interface, from opening an inspection to opening a case |
 | `audit_app.py` | 106 checks: every page, every detail screen, 0 axe violations |
 | `check_api_reach.py` | 92 API operations: 68 reached from a screen, 24 recorded with a reason, 0 unexplained |

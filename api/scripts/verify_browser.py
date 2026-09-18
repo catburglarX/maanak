@@ -186,6 +186,7 @@ def run_axe(page, label: str) -> None:
 
 
 def main() -> int:
+    from playwright.sync_api import TimeoutError as PlaywrightTimeout
     from playwright.sync_api import sync_playwright
 
     emails = seed_accounts()
@@ -368,15 +369,23 @@ def main() -> int:
 
         print("sign-out")
         page.goto(f"{BASE_URL}/app/overview.html", wait_until="domcontentloaded")
-        signout = page.locator("button:has-text('Sign out'), a:has-text('Sign out')").first
-        if signout.count():
-            signout.click()
-            page.wait_for_timeout(2500)
+        # The user bar, and the sign-out control inside it, are rendered after
+        # requireAuth() resolves /auth/me. Sampling count() straight after
+        # domcontentloaded is a race: it passed on one runner and failed on another with
+        # "a sign-out control is present in the workspace", which read as a missing
+        # feature rather than as a test that did not wait.
+        selector = "button:has-text('Sign out'), a:has-text('Sign out')"
+        try:
+            page.wait_for_selector(selector, timeout=20000)
+        except PlaywrightTimeout:
+            check(False, "a sign-out control is present in the workspace")
+        else:
+            check(True, "a sign-out control is present in the workspace")
+            page.locator(selector).first.click()
+            page.wait_for_url("**/login.html*", timeout=20000)
             check(
                 "login" in page.url.lower(), f"signing out returns to the login page ({page.url})"
             )
-        else:
-            check(False, "a sign-out control is present in the workspace")
 
         print("protected pages require a session")
         fresh = browser.new_context()
