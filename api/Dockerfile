@@ -12,7 +12,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # fonts-noto-core: ships NotoSansDevanagari + NotoSerifDevanagari for PDF rendering
 # libgl1 / libglib2.0-0: OpenCV runtime dependencies
 # libjpeg / libwebp / zlib: Pillow image codecs
-RUN apt-get update && apt-get install -y --no-install-recommends \
+#
+# The upgrade step is not cosmetic. A base image tag is rebuilt on its own schedule, so
+# between rebuilds it carries whatever security updates Debian has published since. A
+# trivy scan of this image found three HIGH severity issues in libpcre2, all of them
+# already fixed in the Debian archive and none of them reachable without this step.
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
         tesseract-ocr \
         tesseract-ocr-eng \
         tesseract-ocr-hin \

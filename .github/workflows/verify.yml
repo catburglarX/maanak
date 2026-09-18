@@ -15,7 +15,10 @@ env:
   JWT_SECRET: ci-jwt-secret-value-at-least-thirty-two-characters
   S3_SECRET_KEY: ci-object-storage-secret
   S3_ACCESS_KEY: maanak
-  MINIO_KMS_SECRET_KEY: maanak-evidence-key:Y2ktdGVzdC1rbXMta2V5LTMyLWJ5dGVzLWxvbmchIQ==
+  # MinIO requires exactly 32 bytes after the colon. The previous value decoded to
+  # "ci-test-kms-key-32-bytes-long!!", which is 31, so MinIO refused to start with
+  # "invalid key length 31" and the live-stack job never got past starting the stack.
+  MINIO_KMS_SECRET_KEY: maanak-evidence-key:Y2ktdGVzdC1rbXMta2V5LTMyLWJ5dGVzLWxvbmchISE=
   MAANAK_ENV: test
 
 jobs:
@@ -227,7 +230,9 @@ jobs:
         run: docker build -t maanak-api:ci api
 
       - name: Container vulnerability scan
-        uses: aquasecurity/trivy-action@0.28.0
+        # The tag carries a v. Referencing 0.28.0 without it fails the whole job at
+        # "Set up job" with "unable to find version", before any step runs.
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: maanak-api:ci
           format: table
