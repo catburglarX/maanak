@@ -2,6 +2,7 @@
 # Source: requirements.txt   Python: Python 3.12.14
 # Regenerate: docker run --rm -v "$PWD:/w" -w /w python:3.12-slim-bookworm sh scripts/lock.sh
 alembic==1.14.0
+annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1
 argon2-cffi==23.1.0
@@ -17,7 +18,7 @@ chardet==7.6.0
 click==8.5.0
 dnspython==2.8.0
 email_validator==2.2.0
-fastapi==0.115.6
+fastapi==0.141.1
 greenlet==3.5.6
 h11==0.16.0
 hiredis==3.4.1
@@ -33,20 +34,20 @@ MarkupSafe==3.0.3
 numpy==2.2.1
 opencv-python-headless==4.10.0.84
 packaging==26.3
-pillow==11.0.0
+pillow==12.3.0
 prometheus_client==0.21.1
 psycopg==3.2.3
 psycopg-binary==3.2.3
 pycparser==3.0
-pydantic==2.10.4
+pydantic==2.13.5
 pydantic-settings==2.7.0
-pydantic_core==2.27.2
-PyJWT==2.10.1
+pydantic_core==2.46.5
+PyJWT==2.14.0
 pytesseract==0.3.13
 python-dateutil==2.9.0.post0
 python-docx==1.1.2
 python-dotenv==1.2.3
-python-multipart==0.0.20
+python-multipart==0.0.32
 PyYAML==6.0.3
 qrcode==8.0
 redis==5.2.1
@@ -55,8 +56,9 @@ s3transfer==0.10.4
 six==1.17.0
 soupsieve==2.9.2
 SQLAlchemy==2.0.36
-starlette==0.41.3
+starlette==1.6.0
 structlog==24.4.0
+typing-inspection==0.4.4
 typing_extensions==4.16.0
 urllib3==2.8.0
 uvicorn==0.34.0
