@@ -139,7 +139,7 @@ def main() -> int:
                 for item in found:
                     print(
                         f"  FAIL  {name}: {item['id']} ({item['impact']}) "
-                        f"on {item['nodes']} node(s) — {item['help']}"
+                        f"on {item['nodes']} nodes: {item['help']}"
                     )
 
         print()

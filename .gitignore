@@ -39,3 +39,6 @@ _*.md
 test_output.txt
 full_test.txt
 sbom.json
+
+# Generated reports. The document is a local deliverable, not project source.
+docs/*.docx

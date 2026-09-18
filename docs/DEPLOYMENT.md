@@ -60,9 +60,9 @@ Then sign in at http://localhost:8080/login.html.
 | `db` | `postgres:16.6-alpine` | internal | The only relational database |
 | `redis` | `redis:7.4-alpine` | internal | Job queue, rate-limit counters |
 | `minio` | `quay.io/minio/minio` | 9000, 9001 | S3-compatible object storage |
-| `migrate` | built from `api/` | — | One-shot `alembic upgrade head`, then exits |
+| `migrate` | built from `api/` | none | One-shot `alembic upgrade head`, then exits |
 | `api` | built from `api/` | 8000 | FastAPI application |
-| `worker` | built from `api/` | — | arq worker: imaging, OCR, extraction |
+| `worker` | built from `api/` | none | arq worker: imaging, OCR, extraction |
 | `web` | built from `web/` | 8080 | nginx: static files and `/api` proxy |
 
 `db` and `redis` are not published to the host. Use `docker compose exec` to reach them.
@@ -272,7 +272,7 @@ The application is stateless; rolling back means running the previous image.
 4. Check readiness.
 
 Migrations are written so that a downgrade is possible, but a downgrade that drops a
-column loses data. Take a backup first — see `docs/BACKUP_RESTORE.md`.
+column loses data. Take a backup first, following `docs/BACKUP_RESTORE.md`.
 
 ## Scaling
 

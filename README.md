@@ -40,25 +40,28 @@ engine, and that is enforced in the engine rather than left to the interface.
 
 ## What happens to a package
 
-1. Each image is validated from its own bytes and measured on eleven quality signals —
+1. The officer either photographs the package in the browser or attaches an image
+   already on the device. On a phone the camera opens in the page, so the panel can be
+   checked against the frame before anything is kept.
+2. Each image is validated from its own bytes and measured on eleven quality signals:
    sharpness, glare, highlight and shadow clipping, brightness, contrast, resolution,
-   skew, framing, text size and capture source — then the officer is told what to fix in
+   skew, framing, text size and capture source. The officer is then told what to fix in
    plain words: "strong glare is covering part of the panel".
-2. The original bytes are stored unchanged, hashed with SHA-256, and the chain of custody
+3. The original bytes are stored unchanged, hashed with SHA-256, and the chain of custody
    is recorded. Location is never read from photograph metadata.
-3. A background worker reads the panel with Tesseract in English and Hindi, trying
+4. A background worker reads the panel with Tesseract in English and Hindi, trying
    several language and orientation configurations and keeping whichever measurably reads
    best.
-4. Declarations are located and normalised with exact `Decimal` arithmetic and unit-aware
+5. Declarations are located and normalised with exact `Decimal` arithmetic and unit-aware
    conversion: MRP, net quantity, unit sale price, manufacturer, consumer care, country of
    origin, date marking, batch.
-5. Each reading is shown beside the region of the image it came from, to confirm, correct
+6. Each reading is shown beside the region of the image it came from, to confirm, correct
    or reject with a reason.
-6. Approved rule versions are applied to the reviewed values, and every finding records
+7. Approved rule versions are applied to the reviewed values, and every finding records
    its citation, why that version was selected, the inputs and the arithmetic.
-7. A report snapshot is frozen, hashed, and rendered to PDF and to an editable document
+8. A report snapshot is frozen, hashed, and rendered to PDF and to an editable document
    from that snapshot.
-8. A public page confirms a report exists and is unchanged, without disclosing the case.
+9. A public page confirms a report exists and is unchanged, without disclosing the case.
 
 ![The inspection review screen](docs/screenshots/inspection-review.png)
 
@@ -205,22 +208,32 @@ statement of what was verified rather than a count.
 # Formatting, lint and types
 docker compose run --rm --no-deps --entrypoint sh api scripts/quality.sh
 
-# Unit tests plus the live-stack suites
-docker compose run --rm --no-deps --entrypoint sh api scripts/run_tests.sh
+# Unit tests, the prose gate and the live-stack suites. Mount the repository root
+# rather than api/ alone so the prose gate can read web/ and docs/ as well.
+docker compose run --rm --no-deps -v "$PWD:/repo" -w /repo/api \
+  -e PYTHONPATH=/repo/api --entrypoint sh api scripts/run_tests.sh
 
-# Browser, accessibility, links, prose
+# Browser, accessibility, tints, links
 docker build -f api/Dockerfile.browser -t maanak-browser:dev api
 docker run --rm --network maanak_default -v "$PWD/api:/w" -w /w \
   -e BASE_URL=http://web:8080 maanak-browser:dev
 docker run --rm --network maanak_default -v "$PWD/api:/w" -w /w \
   -e BASE_URL=http://web:8080 maanak-browser:dev python scripts/audit_app.py
+docker run --rm --network maanak_default -v "$PWD/api:/w" -w /w \
+  -e BASE_URL=http://web:8080 maanak-browser:dev python scripts/measure_a11y.py
+docker run --rm --network maanak_default -v "$PWD/api:/w" -w /w \
+  -e BASE_URL=http://web:8080 maanak-browser:dev python scripts/scan_tints.py --app
 ```
+
+Each of the eight `verify_*` suites bootstraps its own workspace, so run
+`scripts/reset_data.py` between them. That also flushes the Redis rate-limit counters,
+without which repeated sign-ins start returning 401.
 
 Measured on the current tree:
 
 | Suite | Result |
 | --- | --- |
-| `verify_schema.py` | 14 checks — 30 tables, 184 indexes, 29 CHECK constraints, audit table rejects UPDATE and DELETE |
+| `verify_schema.py` | 14 checks: 30 tables, 184 indexes, 29 CHECK constraints, audit table rejects UPDATE and DELETE |
 | `verify_security.py` | 51 checks |
 | `verify_extraction.py` | 62 checks |
 | `verify_rules.py` | 71 checks |
@@ -229,17 +242,29 @@ Measured on the current tree:
 | `verify_workflow.py` | 117 checks |
 | `verify_matters.py` | 86 checks |
 | `verify_browser.py` | 59 checks, 0 axe violations on 8 pages |
-| `audit_app.py` | 100 checks — every page, every detail screen, 0 axe violations |
-| `measure_a11y.py` | 0 axe violations across 12 public pages at WCAG 2.0/2.1/2.2 A and AA; 0 targets under 24×24 |
-| `check_links.py` | 0 broken links, 72 in-page anchors resolve |
-| `check_prose.py` | 0 machine-writing tells across 26 pages |
-| pytest | 94 items |
-| `quality.sh` | 112 files formatted, lint clean, mypy clean on 83 files |
+| `verify_officer_flow.py` | 44 checks: the whole officer workflow driven through the interface, from opening an inspection to opening a case |
+| `audit_app.py` | 106 checks: every page, every detail screen, 0 axe violations |
+| `check_api_reach.py` | 92 API operations: 68 reached from a screen, 24 recorded with a reason, 0 unexplained |
+| `check_permission_names.py` | 25 permission names used by the interface, 0 that do not exist |
+| `check_js_bindings.py` | 26 modules, 0 using a helper they never imported |
+| `check_error_messages.py` | 164 error messages, 0 naming a JSON key or a column |
+| `measure_a11y.py` | 0 axe violations across 14 public pages at WCAG 2.0/2.1/2.2 A and AA; 0 targets under 24×24; 0 sticky or fixed elements |
+| `scan_tints.py` | 0 warm-tinted surfaces across 24 pages at 3 breakpoints |
+| `check_links.py` | 0 broken links, 76 in-page anchors resolve |
+| `check_prose.py` | 0 machine-writing tells across 28 pages and 14 documents, 27,951 words |
+| pytest | 118 unit items, 5 live-stack items |
+| `quality.sh` | 119 files formatted, lint clean, mypy clean on 85 files |
+| `verify_package.sh` | 39 checks on the release archive |
 
 Two of those exist because the standard tooling does not cover them. `measure_a11y.py`
 measures WCAG 2.2 success criterion 2.5.8, for which axe-core has no rule, and enumerates
 sticky positioning for 2.4.11. `check_prose.py` enforces the writing rules this project
 holds itself to, so "the copy is not machine-generated filler" is a check and not a claim.
+It treats the em dash as a hard failure rather than rationing it: every place the code
+reached for one turned out to be a sentence that read better rebuilt around a colon, a
+full stop or a different clause order. A unit test extends the same rule to the Python,
+JavaScript and CSS sources, and `check_report_text.py` extracts the text from the
+generated PDF and DOCX to confirm it holds in the documents a reader receives.
 
 Both found real defects. Target-size measurement caught utility links at 19 pixels,
 checkboxes at 13×13 and file inputs at 21. Extending axe to the inspection screen caught a
@@ -290,6 +315,7 @@ Some invariants worth knowing:
 
 | Document | Contents |
 | --- | --- |
+| [RUNNING.md](docs/RUNNING.md) | Running it on localhost from a clean machine, with every command |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Components, data flow, why each technology |
 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Clean install, environment, operations, troubleshooting |
 | [LEGAL_SOURCES.md](docs/LEGAL_SOURCES.md) | What is verified, what is not, and how to close the gap |

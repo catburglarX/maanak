@@ -34,7 +34,7 @@ protected.
 | `capture_latitude`, `capture_longitude`, `capture_accuracy_m` | Only when the officer explicitly permits location capture |
 | `exif_handling`, `exif_summary` | `preserved_in_record`: EXIF is read into the record, the original bytes keep theirs, derivatives are stripped |
 | `quality`, `quality_override_reason`, `quality_accepted_by_id` | The measured signals, and who accepted a poor image and why |
-| `malware_scan_state` | `not_scanned` — see `docs/KNOWN_LIMITS.md` |
+| `malware_scan_state` | Always `not_scanned`. See `docs/KNOWN_LIMITS.md` |
 | `retention_state`, `retain_until`, `legal_hold` | Retention controls |
 
 GPS is deliberately **not** taken from EXIF. Location is recorded from an explicit officer

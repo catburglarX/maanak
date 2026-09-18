@@ -96,9 +96,9 @@ A restore is not finished until these four pass. Nothing here is optional.
 docker compose run --rm --no-deps migrate python scripts/verify_schema.py
 ```
 
-14 checks: the tables, indexes, constraints and — importantly — that `audit_events`
-still refuses `UPDATE` and `DELETE`. A restore that lost the triggers would pass a naive
-row count and fail here.
+14 checks: the tables, the indexes, the constraints, and, most importantly, that
+`audit_events` still refuses `UPDATE` and `DELETE`. A restore that lost the triggers
+would pass a naive row count and fail here.
 
 ### 2. The audit chain
 
@@ -108,7 +108,7 @@ curl -fsS -b cookies.txt http://localhost:8080/api/v1/audit/verify
 
 Compare `head_sequence` and `head_hash` with
 `backup/<stamp>/audit-chain-at-backup.json`. Equal values mean the restored trail is the
-same trail. `intact: false` means the restore is not trustworthy — investigate rather
+same trail. `intact: false` means the restore is not trustworthy. Investigate rather
 than proceed.
 
 ### 3. Evidence hashes
@@ -152,7 +152,7 @@ still agree.
 | `Inspection.legal_hold`, `Inspection.retention_state` | The same at inspection level |
 
 The fields are recorded and honoured by the model. **No automatic deletion job runs in
-this build**: nothing is deleted until an operator acts. That is deliberate — an
+this build**: nothing is deleted until an operator acts. That is deliberate. An
 automatic deleter that removes evidence under legal hold because of a date-arithmetic bug
 is a worse failure than manual work.
 

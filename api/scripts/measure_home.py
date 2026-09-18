@@ -1,7 +1,7 @@
 """Measure the homepage against the reference specification.
 
-Reports the values the design checklist names explicitly — bar heights, hero
-height, headline size, band alignment — read from the rendered page rather than
+Reports the values the design checklist names explicitly, so bar heights, hero
+height, headline size and band alignment are read from the rendered page rather than
 inferred from the stylesheet.
 """
 

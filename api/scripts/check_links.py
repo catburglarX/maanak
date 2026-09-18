@@ -73,7 +73,8 @@ def main() -> int:
                 failures += len(missing)
                 print(f"  FAIL  {name}: no element for {missing}")
             else:
-                print(f"  ok    {name}: {len(fragments)} anchor(s)")
+                count = len(fragments)
+                print(f"  ok    {name}: {count} anchor{'' if count == 1 else 's'}")
 
             for href in hrefs:
                 if href.startswith("/"):

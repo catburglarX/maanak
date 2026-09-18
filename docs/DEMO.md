@@ -29,7 +29,7 @@ It prints the credentials it created. Sign in at http://localhost:8080/login.htm
 | --- | --- | --- | --- |
 | `admin@example.org` | `admin` | `IN` | Creates the others |
 | `ruleauthor@example.org` | `rule_admin` | `IN` | Authors a rule version |
-| `ruleapprover@example.org` | `rule_admin` | `IN` | Approves it — the author cannot |
+| `ruleapprover@example.org` | `rule_admin` | `IN` | Approves it, which the author cannot |
 | `inspector@example.org` | `inspector` | `IN-HR-GURUGRAM` | Captures and reviews evidence |
 | `reviewer@example.org` | `reviewer` | `IN-HR-GURUGRAM` | Records the decision, issues the report |
 | `controller@example.org` | `controller` | `IN-HR` | Opens the case, reads the audit trail |
@@ -88,7 +88,7 @@ Show:
 
 - `INSP-2026-000001` created and linked to the complaint;
 - the consumer's photograph carried across as evidence, with a recorded reason for
-  accepting its quality — a consumer photograph cannot be retaken to order;
+  accepting its quality, because a consumer photograph cannot be retaken to order;
 - the package-face checklist.
 
 ## 3. Poor evidence is refused, with instructions (2 minutes)
@@ -97,7 +97,7 @@ On the inspection, upload the poor photograph as the declaration panel.
 
 It is refused. Show the measured signals: the sharpness number, the glare percentage,
 the threshold each was compared against, and the sentence telling the officer what to
-do — "strong glare is covering part of the panel, move the light source or tilt the
+do: "strong glare is covering part of the panel, move the light source or tilt the
 package".
 
 > Say: this is not a quality score. Each signal is a measurement against a documented
@@ -107,7 +107,7 @@ Now upload the clear photograph. Accepted with 202, and the SHA-256 of the exact
 is recorded. Watch the job progress: real percentages and stage names from the worker,
 not a spinner.
 
-Try uploading the same file again — refused as a duplicate.
+Try uploading the same file again. It is refused as a duplicate.
 
 ## 4. Machine reading and officer review are separate (3 minutes)
 
@@ -171,7 +171,7 @@ unreviewed readings produce "unable to determine", never a violation.
 
 As the inspector, try to record the decision. Refused: an inspector does not decide.
 
-Send it for reviewer decision. Sign in as the **state controller** — note that a
+Send it for reviewer decision. Sign in as the **state controller**, and note that a
 controller at `IN-HR` can read a district inspection beneath it.
 
 Try a two-word reason. Refused. Give a real one and record the decision.
@@ -187,7 +187,7 @@ Issue the report. Show:
 - the PDF, with the findings, the calculations, the evidence hashes, the citation, the
   unconfirmed-authority warning, page numbers and the content hash in the footer;
 - the DOCX, the same content in editable form;
-- that the inspection is now frozen — try to change a package face and it is refused.
+- that the inspection is now frozen. Try to change a package face and it is refused.
 
 Open the public verification page and enter the reference. It confirms the report exists,
 when it was issued, by which workspace, and that its content is unchanged. It does **not**
@@ -199,7 +199,7 @@ Open a case from the report. Show the provisions relied on, collected from the c
 rules.
 
 Prepare a notice. Show the rendered text with no unfilled placeholders. Issue it. It is
-now frozen — the served text cannot change even if the template does.
+now frozen: the served text cannot change even if the template does.
 
 Finally, **Audit**. Show the trail, then press **Verify chain**: every event replayed,
 the chain intact.
@@ -220,7 +220,7 @@ Do not skip this. It is the difference between a demonstration and a claim.
 - No OCR accuracy figure is claimed, because no labelled corpus of real packages was
   available to measure one.
 - No rule citation has been verified against a gazette notification. Every one is flagged.
-- Net quantity is never verified — that needs weighing, and every report says so.
+- Net quantity is never verified. That needs weighing, and every report says so.
 - The report signature is a clearly labelled development signature, not a real one.
 - `docs/KNOWN_LIMITS.md` lists everything else.
 

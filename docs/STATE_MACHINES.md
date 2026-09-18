@@ -20,29 +20,29 @@ Declared transitions: 23
 
 | From | To | Action | Roles | Reason required | Guards |
 | --- | --- | --- | --- | --- | --- |
-| `additional_evidence_required` | `evidence_pending` | Resume evidence capture | admin, controller, inspector, reviewer | no | — |
-| `case_opened` | `closed` | Close inspection | admin, controller, reviewer | yes | — |
-| `closed` | `archived` | Archive | admin, controller | no | — |
+| `additional_evidence_required` | `evidence_pending` | Resume evidence capture | admin, controller, inspector, reviewer | no | none |
+| `case_opened` | `closed` | Close inspection | admin, controller, reviewer | yes | none |
+| `closed` | `archived` | Archive | admin, controller | no | none |
 | `compliant` | `report_issued` | Issue report | admin, controller, reviewer | no | `decision_recorded` |
-| `compliant` | `reviewer_review` | Reopen decision | admin, controller, reviewer | yes | — |
+| `compliant` | `reviewer_review` | Reopen decision | admin, controller, reviewer | yes | none |
 | `draft` | `evidence_pending` | Begin evidence capture | admin, controller, inspector, reviewer | no | `product_identified` |
 | `evidence_pending` | `processing` | Evidence submitted for analysis | admin, controller, inspector, reviewer | no | `has_evidence` |
-| `officer_review` | `additional_evidence_required` | Request additional evidence | admin, controller, inspector, reviewer | yes | — |
-| `officer_review` | `evidence_pending` | Capture more evidence | admin, controller, inspector, reviewer | yes | — |
+| `officer_review` | `additional_evidence_required` | Request additional evidence | admin, controller, inspector, reviewer | yes | none |
+| `officer_review` | `evidence_pending` | Capture more evidence | admin, controller, inspector, reviewer | yes | none |
 | `officer_review` | `reviewer_review` | Send for reviewer decision | admin, controller, inspector, reviewer | no | `all_candidates_reviewed` |
-| `processing` | `evidence_pending` | Analysis failed, capture again | admin, controller, inspector, reviewer | yes | — |
-| `processing` | `officer_review` | Analysis complete | admin, controller, inspector, reviewer | no | — |
+| `processing` | `evidence_pending` | Analysis failed, capture again | admin, controller, inspector, reviewer | yes | none |
+| `processing` | `officer_review` | Analysis complete | admin, controller, inspector, reviewer | no | none |
 | `report_issued` | `case_opened` | Open case | admin, controller, reviewer | no | `report_issued` |
-| `report_issued` | `closed` | Close inspection | admin, controller, reviewer | yes | — |
-| `reviewer_review` | `additional_evidence_required` | Request additional evidence | admin, controller, reviewer | yes | — |
+| `report_issued` | `closed` | Close inspection | admin, controller, reviewer | yes | none |
+| `reviewer_review` | `additional_evidence_required` | Request additional evidence | admin, controller, reviewer | yes | none |
 | `reviewer_review` | `compliant` | Record: compliant | admin, controller, reviewer | yes | `all_candidates_reviewed`, `all_checks_executed` |
-| `reviewer_review` | `officer_review` | Return to inspecting officer | admin, controller, reviewer | yes | — |
+| `reviewer_review` | `officer_review` | Return to inspecting officer | admin, controller, reviewer | yes | none |
 | `reviewer_review` | `unable_to_determine` | Record: unable to determine | admin, controller, reviewer | yes | `all_candidates_reviewed` |
 | `reviewer_review` | `violation_found` | Record: violation found | admin, controller, reviewer | yes | `all_candidates_reviewed`, `all_checks_executed` |
 | `unable_to_determine` | `report_issued` | Issue report | admin, controller, reviewer | no | `decision_recorded` |
-| `unable_to_determine` | `reviewer_review` | Reopen decision | admin, controller, reviewer | yes | — |
+| `unable_to_determine` | `reviewer_review` | Reopen decision | admin, controller, reviewer | yes | none |
 | `violation_found` | `report_issued` | Issue report | admin, controller, reviewer | no | `decision_recorded` |
-| `violation_found` | `reviewer_review` | Reopen decision | admin, controller, reviewer | yes | — |
+| `violation_found` | `reviewer_review` | Reopen decision | admin, controller, reviewer | yes | none |
 
 ## Complaint
 
@@ -52,22 +52,22 @@ Declared transitions: 16
 
 | From | To | Action | Roles | Reason required | Guards |
 | --- | --- | --- | --- | --- | --- |
-| `assigned` | `escalated` | Escalate | admin, controller, inspector, reviewer | yes | — |
+| `assigned` | `escalated` | Escalate | admin, controller, inspector, reviewer | yes | none |
 | `assigned` | `inspection_created` | Create inspection | admin, controller, inspector, reviewer | no | `inspection_linked` |
-| `assigned` | `resolved` | Resolve | admin, controller, reviewer | yes | — |
-| `duplicate` | `closed` | Close | admin, controller, reviewer | no | — |
-| `escalated` | `resolved` | Resolve | admin, controller, reviewer | yes | — |
-| `inspection_created` | `escalated` | Escalate | admin, controller, inspector, reviewer | yes | — |
-| `inspection_created` | `resolved` | Resolve | admin, controller, reviewer | yes | — |
-| `received` | `duplicate` | Mark duplicate | admin, controller, inspector, reviewer | yes | — |
-| `received` | `rejected` | Reject | admin, controller, reviewer | yes | — |
-| `received` | `triaged` | Triage | admin, controller, inspector, reviewer | no | — |
-| `rejected` | `closed` | Close | admin, controller, reviewer | no | — |
-| `resolved` | `closed` | Close | admin, controller, reviewer | no | — |
+| `assigned` | `resolved` | Resolve | admin, controller, reviewer | yes | none |
+| `duplicate` | `closed` | Close | admin, controller, reviewer | no | none |
+| `escalated` | `resolved` | Resolve | admin, controller, reviewer | yes | none |
+| `inspection_created` | `escalated` | Escalate | admin, controller, inspector, reviewer | yes | none |
+| `inspection_created` | `resolved` | Resolve | admin, controller, reviewer | yes | none |
+| `received` | `duplicate` | Mark duplicate | admin, controller, inspector, reviewer | yes | none |
+| `received` | `rejected` | Reject | admin, controller, reviewer | yes | none |
+| `received` | `triaged` | Triage | admin, controller, inspector, reviewer | no | none |
+| `rejected` | `closed` | Close | admin, controller, reviewer | no | none |
+| `resolved` | `closed` | Close | admin, controller, reviewer | no | none |
 | `triaged` | `assigned` | Assign to officer | admin, controller, reviewer | no | `assignee_present` |
-| `triaged` | `duplicate` | Mark duplicate | admin, controller, inspector, reviewer | yes | — |
+| `triaged` | `duplicate` | Mark duplicate | admin, controller, inspector, reviewer | yes | none |
 | `triaged` | `inspection_created` | Open inspection | admin, controller, inspector, reviewer | no | `inspection_linked` |
-| `triaged` | `rejected` | Reject | admin, controller, reviewer | yes | — |
+| `triaged` | `rejected` | Reject | admin, controller, reviewer | yes | none |
 
 ## Case
 
@@ -77,21 +77,21 @@ Declared transitions: 15
 
 | From | To | Action | Roles | Reason required | Guards |
 | --- | --- | --- | --- | --- | --- |
-| `awaiting_response` | `response_received` | Record response | admin, controller, reviewer | no | — |
-| `awaiting_response` | `under_consideration` | No response, proceed | admin, controller, reviewer | yes | — |
-| `awaiting_response` | `withdrawn` | Withdraw notice | admin, controller | yes | — |
+| `awaiting_response` | `response_received` | Record response | admin, controller, reviewer | no | none |
+| `awaiting_response` | `under_consideration` | No response, proceed | admin, controller, reviewer | yes | none |
+| `awaiting_response` | `withdrawn` | Withdraw notice | admin, controller | yes | none |
 | `draft` | `notice_issued` | Issue notice | admin, controller, reviewer | no | `notice_ready` |
-| `draft` | `withdrawn` | Withdraw | admin, controller | yes | — |
-| `follow_up_inspection` | `under_consideration` | Record follow-up result | admin, controller, reviewer | no | — |
-| `hearing_scheduled` | `under_consideration` | Record hearing outcome | admin, controller, reviewer | no | — |
+| `draft` | `withdrawn` | Withdraw | admin, controller | yes | none |
+| `follow_up_inspection` | `under_consideration` | Record follow-up result | admin, controller, reviewer | no | none |
+| `hearing_scheduled` | `under_consideration` | Record hearing outcome | admin, controller, reviewer | no | none |
 | `notice_issued` | `awaiting_response` | Record delivery | admin, controller, reviewer | no | `delivery_recorded` |
-| `notice_issued` | `withdrawn` | Withdraw notice | admin, controller | yes | — |
-| `resolved` | `closed` | Close case | admin, controller | no | — |
-| `response_received` | `hearing_scheduled` | Schedule hearing | admin, controller, reviewer | no | — |
-| `response_received` | `under_consideration` | Consider response | admin, controller, reviewer | no | — |
-| `under_consideration` | `follow_up_inspection` | Order follow-up inspection | admin, controller, reviewer | no | — |
-| `under_consideration` | `resolved` | Record outcome | admin, controller | yes | — |
-| `withdrawn` | `closed` | Close case | admin, controller | no | — |
+| `notice_issued` | `withdrawn` | Withdraw notice | admin, controller | yes | none |
+| `resolved` | `closed` | Close case | admin, controller | no | none |
+| `response_received` | `hearing_scheduled` | Schedule hearing | admin, controller, reviewer | no | none |
+| `response_received` | `under_consideration` | Consider response | admin, controller, reviewer | no | none |
+| `under_consideration` | `follow_up_inspection` | Order follow-up inspection | admin, controller, reviewer | no | none |
+| `under_consideration` | `resolved` | Record outcome | admin, controller | yes | none |
+| `withdrawn` | `closed` | Close case | admin, controller | no | none |
 
 ## Guards
 

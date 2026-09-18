@@ -76,8 +76,8 @@ because a notice has to be addressed to somebody.
 ## What is never stored
 
 - Plaintext passwords, anywhere, at any point.
-- Plaintext refresh tokens or password-reset tokens — hashes only.
-- Card or payment data — the system has no payment function.
+- Plaintext refresh tokens or password-reset tokens. Hashes only.
+- Card or payment data. The system has no payment function.
 - Biometric data. No facial recognition, no biometric identification.
 - GPS from photograph metadata.
 
@@ -117,7 +117,7 @@ person, brand, premises or officer appears anywhere in this repository.
 - Publish a privacy notice matching the actual processing and set
   `PRIVACY_NOTICE_VERSION` accordingly; the version agreed to is stored per complaint.
 - Decide and implement retention periods. **No automatic deletion job runs in this
-  build** — nothing is deleted until an operator acts.
+  build**: nothing is deleted until an operator acts.
 - Replace the placeholder contact details on the public pages with verified official
   contacts.
 - Review the processing against current MeitY and Digital Personal Data Protection Act

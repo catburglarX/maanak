@@ -171,7 +171,7 @@ def state_machines_document() -> str:
         ]
         for transition in sorted(machine.transitions, key=lambda item: (item.source, item.target)):
             roles = ", ".join(sorted(role.value for role in transition.roles))
-            guards = ", ".join(f"`{guard}`" for guard in transition.guards) or "—"
+            guards = ", ".join(f"`{guard}`" for guard in transition.guards) or "none"
             required = "yes" if transition.reason_required else "no"
             lines.append(
                 f"| `{transition.source}` | `{transition.target}` | {transition.label} "

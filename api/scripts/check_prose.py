@@ -1,4 +1,4 @@
-"""Scan the visible prose in HTML pages for machine-writing tells.
+"""Scan the visible prose for machine-writing tells.
 
 The point is not to score well on a regex. It is that the specific constructions a
 language model reaches for by default are checkable, so there is no need to take
@@ -6,16 +6,25 @@ language model reaches for by default are checkable, so there is no need to take
 
 What it reports, in descending order of how damning each one is:
 
-  fatal      tool leak markers, tracking parameters, chat pleasantries, placeholders
+  fatal      tool leak markers, tracking parameters, chat pleasantries, placeholders,
+             em dashes
   structure  scaffold headings (Introduction, Challenges, Conclusion), title-case
              headings
   syntax     participial tails, negative parallelism, copula avoidance
   lexicon    the vocabulary that co-occurs in model output far more than in human
              writing
 
+The em dash is fatal rather than rationed. It is the single most recognisable tell in
+generated text, and every place this project reached for one turned out to be a
+sentence that read better rebuilt: a colon, a full stop, a pair of commas, or a
+different clause order. So the rule is zero, and it is checked rather than remembered.
+
+HTML and Markdown are both scanned. Code is not prose, so fenced blocks, inline code
+spans and the contents of <script>, <style> and <head> are removed first.
+
 Usage:
     python scripts/check_prose.py web
-    python scripts/check_prose.py web --verbose
+    python scripts/check_prose.py web docs README.md --verbose
 """
 
 from __future__ import annotations
@@ -237,12 +246,22 @@ TIER_2 = [
 ]
 
 TAG_RE = re.compile(r"<(script|style)\b.*?</\1>", re.DOTALL | re.IGNORECASE)
-# Everything in <head> is metadata. A title separator is a typographic convention,
-# not a sentence, and counting it as prose only produces noise.
+# Everything in <head> is metadata, so it is not scanned for prose constructions. The
+# em dash check is applied to the whole file instead, because a title separator is
+# still a character this project does not use.
 HEAD_RE = re.compile(r"<head\b.*?</head>", re.DOTALL | re.IGNORECASE)
 HEADING_RE = re.compile(r"<h([1-6])\b[^>]*>(.*?)</h\1>", re.DOTALL | re.IGNORECASE)
 STRIP_RE = re.compile(r"<[^>]+>")
 WS_RE = re.compile(r"\s+")
+
+EM_DASH = "\u2014"
+
+# Markdown: fenced blocks, indented blocks and inline spans are code, not prose.
+MD_FENCE_RE = re.compile(r"^```.*?^```", re.DOTALL | re.MULTILINE)
+MD_INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
+MD_LINK_RE = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+MD_HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*#*$", re.MULTILINE)
+MD_MARKS_RE = re.compile(r"[*_>|]|^\s*[-+]\s", re.MULTILINE)
 
 
 def visible_text(raw: str) -> str:
@@ -252,12 +271,29 @@ def visible_text(raw: str) -> str:
     return WS_RE.sub(" ", html.unescape(body)).strip()
 
 
+def markdown_text(raw: str) -> str:
+    body = MD_FENCE_RE.sub(" ", raw)
+    body = MD_INLINE_CODE_RE.sub(" ", body)
+    body = MD_LINK_RE.sub(r"\1", body)
+    body = MD_MARKS_RE.sub(" ", body)
+    return WS_RE.sub(" ", body).strip()
+
+
 def headings(raw: str) -> list[tuple[int, str]]:
     out = []
     for level, inner in HEADING_RE.findall(TAG_RE.sub(" ", raw)):
         text = WS_RE.sub(" ", html.unescape(STRIP_RE.sub(" ", inner))).strip()
         if text:
             out.append((int(level), text))
+    return out
+
+
+def markdown_headings(raw: str) -> list[tuple[int, str]]:
+    out = []
+    for hashes, inner in MD_HEADING_RE.findall(MD_FENCE_RE.sub(" ", raw)):
+        text = MD_INLINE_CODE_RE.sub(" ", inner).replace("*", "").strip()
+        if text:
+            out.append((len(hashes), text))
     return out
 
 
@@ -272,7 +308,9 @@ def is_title_case(text: str) -> bool:
 
 def scan(path: Path, verbose: bool) -> tuple[int, int, list[str]]:
     raw = path.read_text(encoding="utf-8")
-    text = visible_text(raw)
+    is_markdown = path.suffix.lower() in {".md", ".markdown"}
+    text = markdown_text(raw) if is_markdown else visible_text(raw)
+    heads = markdown_headings(raw) if is_markdown else headings(raw)
     lower = text.lower()
     words = len(re.findall(r"\b\w+\b", text))
     problems: list[str] = []
@@ -283,7 +321,13 @@ def scan(path: Path, verbose: bool) -> tuple[int, int, list[str]]:
             for match in re.finditer(pattern, text, re.IGNORECASE):
                 problems.append(f"FATAL {label}: {match.group(0)!r}")
 
-    for level, head in headings(raw):
+    # Checked against the whole file, not the extracted prose: a page title, an alt
+    # attribute and a source comment are all text a reader or a maintainer sees.
+    for number, line in enumerate(raw.splitlines(), start=1):
+        if EM_DASH in line:
+            problems.append(f"FATAL em dash: line {number}: {line.strip()[:72]!r}")
+
+    for level, head in heads:
         name = head.strip().lower().rstrip(":")
         if name in SCAFFOLD_ALWAYS:
             problems.append(f"scaffold heading: {head!r}")
@@ -306,13 +350,9 @@ def scan(path: Path, verbose: bool) -> tuple[int, int, list[str]]:
     if words and tier2_hits / max(words, 1) * 1000 >= 3:
         review.append(f"tier-2 density {tier2_hits} in {words} words")
 
-    em = text.count("\u2014")
-    if words and em > max(1, words // 500):
-        review.append(f"em dashes: {em} in {words} words")
-
     lines = []
     if problems or (verbose and review):
-        lines.append(f"  {path.name}  ({words} words)")
+        lines.append(f"  {path}  ({words} words)")
         for item in problems:
             lines.append(f"      {item}")
         if verbose:
@@ -321,15 +361,28 @@ def scan(path: Path, verbose: bool) -> tuple[int, int, list[str]]:
     return len(problems), words, lines
 
 
+def collect(targets: list[str]) -> list[Path]:
+    """Every HTML and Markdown file under each target path, deduplicated."""
+    found: list[Path] = []
+    for target in targets:
+        path = Path(target)
+        if path.is_file():
+            found.append(path)
+        elif path.is_dir():
+            found.extend(path.rglob("*.html"))
+            found.extend(path.rglob("*.md"))
+    return sorted(set(found))
+
+
 def main(argv: list[str]) -> int:
-    if len(argv) < 2:
+    targets = [arg for arg in argv[1:] if not arg.startswith("--")]
+    if not targets:
         print(__doc__)
         return 2
-    root = Path(argv[1])
     verbose = "--verbose" in argv
-    files = sorted(root.rglob("*.html"))
+    files = collect(targets)
     if not files:
-        print(f"no HTML files under {root}")
+        print(f"no HTML or Markdown files under {', '.join(targets)}")
         return 2
 
     total = 0
@@ -341,7 +394,9 @@ def main(argv: list[str]) -> int:
         words += page_words
         output.extend(lines)
 
-    print(f"scanned {len(files)} pages, {words} words of visible prose")
+    pages = sum(1 for path in files if path.suffix.lower() == ".html")
+    markdown = len(files) - pages
+    print(f"scanned {pages} pages and {markdown} markdown files, {words} words of prose")
     print()
     if output:
         print("\n".join(output))
