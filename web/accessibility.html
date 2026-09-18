@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Accessibility statement — Maanak</title>
+  <meta name="description" content="Maanak's conformance claim against WCAG 2.2 level AA, how it was measured, and the barriers that remain.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/legal.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow legal-doc">
+      <h1>Accessibility statement</h1>
+      <p class="standfirst">This statement records what was measured, what the measurements
+        showed, and which barriers are still there. It names the criteria that automated
+        tooling cannot decide, because a claim resting only on a clean automated run would
+        overstate what is known.</p>
+
+      <p class="doc-dates">
+        <span>Measured <b>18 September 2026</b></span>
+        <span>Target <b>WCAG 2.2 level AA</b></span>
+        <span>Partially conformant</span>
+      </p>
+
+      <div class="standing-caveat">
+        <p><strong>Partially conformant means some content does not fully conform.</strong>
+          The barriers in section 5 are known and unfixed. No screen reader has been tested
+          against this software, and no person with a disability has used it, so the parts of
+          the standard that only a human can judge are unverified.</p>
+      </div>
+
+      <nav class="doc-toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading">On this page</h2>
+        <ol>
+          <li><a href="#claim">The conformance claim</a></li>
+          <li><a href="#scope">What the claim covers</a></li>
+          <li><a href="#method">How it was measured</a></li>
+          <li><a href="#implemented">What is implemented</a></li>
+          <li><a href="#barriers">Known barriers</a></li>
+          <li><a href="#untested">What has not been tested</a></li>
+          <li><a href="#indian-law">Indian legal context</a></li>
+          <li><a href="#feedback">Giving feedback</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="claim">The conformance claim</h2>
+      <p>The target is WCAG 2.2 level AA. WCAG 2.2 became a W3C Recommendation on 5 October
+        2023 and adds nine success criteria to WCAG 2.1, six of which apply at level A or AA.
+        It also removes 4.1.1 Parsing, which is obsolete.</p>
+      <p>Against the six new criteria that matter at this level, the position is:</p>
+      <div class="table-wrap">
+        <table class="register">
+          <caption>The WCAG 2.2 additions at level A and AA</caption>
+          <thead>
+            <tr>
+              <th scope="col">Criterion</th>
+              <th scope="col">Level</th>
+              <th scope="col">State</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2.4.11 Focus Not Obscured (Minimum)</td>
+              <td>AA</td>
+              <td>Met on public pages. Measured: none of the twelve uses sticky or fixed
+                positioning. At risk in the workspace, where registers use a sticky table
+                header.</td>
+            </tr>
+            <tr>
+              <td>2.5.7 Dragging Movements</td>
+              <td>AA</td>
+              <td><strong>Not met.</strong> See section 5.</td>
+            </tr>
+            <tr>
+              <td>2.5.8 Target Size (Minimum)</td>
+              <td>AA</td>
+              <td>Met. Measured across all twelve public pages: zero targets below 24 by 24
+                CSS pixels.</td>
+            </tr>
+            <tr>
+              <td>3.2.6 Consistent Help</td>
+              <td>A</td>
+              <td>Met. The same help routes appear in the same relative order in the footer of
+                every public page.</td>
+            </tr>
+            <tr>
+              <td>3.3.7 Redundant Entry</td>
+              <td>A</td>
+              <td>Met. Where the status page asks for both a reference and a contact detail,
+                that falls under the security exception: either alone would disclose a
+                record.</td>
+            </tr>
+            <tr>
+              <td>3.3.8 Accessible Authentication (Minimum)</td>
+              <td>AA</td>
+              <td>Met. Sign-in needs no puzzle and no transcription. Paste is permitted and
+                password managers work, which the criterion accepts as a mechanism.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="scope">What the claim covers</h2>
+      <p>Twelve public pages, four workspace registers and the inspection review screen were
+        measured. The workspace has fourteen screens, and the nine not listed have not been
+        measured.</p>
+      <p>The evidence review screen is the most complex thing here. It is now scanned, and the
+        known failure in section 5 lives in it.</p>
+
+      <h2 id="method">How it was measured</h2>
+      <p>Three separate checks run against a real browser rather than against markup in
+        isolation.</p>
+      <p>axe-core runs against seventeen pages: all twelve public pages, four workspace
+        registers, and the inspection review screen, which is reached by record id and so
+        needs a real inspection in the workspace before it can be scanned at all. It is
+        configured for WCAG 2.0, 2.1 and 2.2 at level A and AA together. The result is
+        <strong>zero violations at any severity</strong>, not merely zero serious ones. A
+        further fifty-nine assertions cover landmarks, heading order, form labelling, error
+        announcement, focus behaviour, reflow and language marking.</p>
+      <p>Extending that scan to the inspection screen was worth doing: it immediately found
+        two defects that had been there unnoticed. Each candidate card carried
+        <code>role="button"</code> while containing its own review buttons, which nests
+        interactive controls, and it used <code>aria-selected</code>, which that role does not
+        permit. Both were rated serious or critical. Selection now sits on a real button in
+        the card head using <code>aria-pressed</code>, and the card is a plain container.</p>
+      <p>Target sizes are measured separately because axe-core has no rule for 2.5.8. Every
+        interactive element on every public page is measured against the 24 pixel minimum, with
+        the inline-text exception applied. That measurement currently returns zero undersized
+        targets. It found three real problems when it was first run: the utility bar links were
+        19 pixels tall, checkboxes rendered at 13 by 13, and file inputs at 21 pixels. All three
+        were fixed rather than argued away under the spacing exception.</p>
+      <p>Sticky and fixed positioning is enumerated on every public page, because that is what
+        obscures a focused control under 2.4.11. This found a real defect: the policy pages had
+        inherited the workspace's sticky table header, which serves a long register and does
+        nothing for a four-row table in a document. It was removed. All twelve public pages now
+        report no sticky or fixed positioning at all.</p>
+      <p>Keyboard operation was walked through by hand on the public forms and the sign-in
+        flow.</p>
+      <p>One thing to be clear about: a clean axe-core run is weak evidence on its own.
+        Automated tools decide a minority of the standard. They cannot judge whether alt text
+        is accurate, whether focus order is sensible, whether an error message is useful, or
+        whether a heading describes what follows it.</p>
+
+      <h2 id="implemented">What is implemented</h2>
+      <p>Landmarks on every page, with a skip link that works. One <code>h1</code> per page and
+        heading levels that never skip. Form controls with real labels, and validation errors
+        announced through a live region rather than only shown in red.</p>
+      <p>Focus indicators are a 3 pixel outline with a 2 pixel offset, and are never removed.
+        On dark surfaces the outline switches to white, because the burgundy would vanish
+        against them.</p>
+      <p>Colour never carries meaning alone. Every status label pairs a colour with both a text
+        string and a glyph, so a red tag still reads as rejected in greyscale.</p>
+      <p>Layouts reflow to 320 pixels without a horizontal scrollbar and survive 400 per cent
+        zoom. Dialogs hold focus, close on Escape, and return focus to whatever opened them.
+        Motion stops when the operating system asks for reduced motion. Devanagari text carries
+        <code>lang="hi"</code> so a screen reader switches voice instead of reading Hindi as
+        English.</p>
+
+      <h2 id="barriers">Known barriers</h2>
+
+      <h3>Panning the evidence viewer needs a drag (2.5.7, level AA)</h3>
+      <p>The evidence viewer pans by holding a pointer and dragging. Zoom and rotation have
+        keyboard controls; panning does not have a single-pointer alternative. Somebody who
+        cannot hold and drag accurately cannot move around a magnified image.</p>
+      <p>This fails 2.5.7 Dragging Movements. Dragging is not essential here, so the exception
+        does not apply. The fix is directional controls that move the viewport by a step on
+        each activation, and it is not built.</p>
+
+      <h3>Sticky elements in the workspace may obscure focus (2.4.11, level AA)</h3>
+      <p>Workspace registers use a sticky table header so column names stay visible while
+        scrolling, and the inspection screen has a sticky action bar along the bottom. A focused
+        control scrolled beneath either could be hidden, which is what 2.4.11 prohibits. This
+        was found by enumerating computed positioning rather than by observing a failure, so it
+        is a credible risk and not a confirmed defect.</p>
+      <p>The action bar was made materially smaller during this work. It used to contain the
+        whole decision form, which made it about 500 pixels tall and left it covering the
+        evidence the officer was deciding on. The form is now an ordinary section in the page
+        and the bar holds only the finding tally and the actions.</p>
+      <p>The same sticky header style had also reached the policy pages, where it was pointless,
+        and it has been removed from them. All twelve public pages now report no sticky or fixed
+        positioning.</p>
+
+      <h3>No feedback channel</h3>
+      <p>An accessibility statement is supposed to tell you where to report a barrier. This
+        deployment publishes no contact route because no organisation operates it. That is a
+        gap in this statement and section 8 says what should be there instead.</p>
+
+      <h2 id="untested">What has not been tested</h2>
+      <ul>
+        <li>Any screen reader. NVDA, JAWS, VoiceOver and TalkBack have not been run against
+          this software. Semantics were written to specification and verified structurally,
+          which is not the same as hearing the result.</li>
+        <li>Voice control and switch access.</li>
+        <li>Use by anybody with a disability. No usability session has taken place.</li>
+        <li>Text spacing overrides (1.4.12) and non-text contrast (1.4.11) beyond what
+          axe-core checks.</li>
+        <li>The PDF and editable reports the system generates. A generated PDF has its own
+          tagging and reading-order requirements, and neither has been checked.</li>
+        <li>Nine of the fourteen workspace screens.</li>
+      </ul>
+      <p>Independent accessibility testing is the item most worth commissioning before any real
+        deployment, and it has not been commissioned.</p>
+
+      <h2 id="indian-law">Indian legal context</h2>
+      <p>Section 40 of the Rights of Persons with Disabilities Act, 2016 provides for standards
+        of accessibility for information and communication technology. A deployment by a
+        government department would also fall under the Guidelines for Indian Government
+        Websites, published at <code>guidelines.india.gov.in</code>, which carry requirements
+        beyond WCAG, including on multilingual content and on document formats.</p>
+      <p>This software has not been assessed against those guidelines. WCAG 2.2 AA is the only
+        standard measured here, and meeting it does not by itself satisfy them.</p>
+
+      <h2 id="feedback">Giving feedback</h2>
+      <p>There is no published channel, so a barrier reported now reaches nobody.</p>
+      <p>A deploying authority must publish an email address and a telephone number for
+        accessibility feedback, name a response time, and state the escalation route if that
+        response does not come. Under the current guidance a reasonable target is a substantive
+        reply within two weeks and an alternative format on request.</p>
+
+      <div class="doc-foot">
+        <p>Related: <a href="/privacy.html">privacy notice</a>,
+          <a href="/terms.html">terms of use</a>,
+          <a href="/security.html">security</a>.</p>
+      </div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+</body>
+</html>

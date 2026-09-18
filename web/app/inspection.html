@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inspection — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <div id="page-status" class="status-region" aria-live="polite"></div>
+
+        <!-- Context / header -->
+        <section id="context" aria-label="Inspection context">
+          <div id="context-body" aria-busy="true">
+            <p>Loading inspection…</p>
+          </div>
+        </section>
+
+        <!-- Coverage checklist -->
+        <section aria-labelledby="coverage-h">
+          <h2 id="coverage-h">Package-face coverage</h2>
+          <ul id="coverage" class="coverage-list"></ul>
+        </section>
+
+        <!-- Upload panel -->
+        <section aria-labelledby="upload-h" data-permission="evidence.upload" hidden>
+          <h2 id="upload-h">Add evidence</h2>
+          <form id="upload-form" class="panel" novalidate>
+            <div id="upload-status" class="status-region" aria-live="polite"></div>
+            <div class="row">
+              <div class="field grow-220">
+                <label for="up-face">Package face</label>
+                <select id="up-face" name="face"></select>
+              </div>
+              <div class="field grow-260">
+                <label for="up-file">Image file</label>
+                <input type="file" id="up-file" name="file" accept="image/jpeg,image/png,image/webp" required aria-required="true">
+              </div>
+              <div class="field self-end">
+                <button type="submit" class="btn btn-primary" id="up-btn">Upload &amp; analyse</button>
+              </div>
+            </div>
+            <div id="up-quality"></div>
+            <div id="jobs"></div>
+          </form>
+        </section>
+
+        <!-- Split review -->
+        <section aria-labelledby="review-h">
+          <h2 id="review-h">Evidence review</h2>
+          <div class="split">
+            <!-- Left: viewer -->
+            <div class="viewer" aria-label="Evidence viewer">
+              <div class="viewer-toolbar" role="toolbar" aria-label="Image controls">
+                <button type="button" class="btn btn-sm" id="zoom-out" aria-label="Zoom out">−</button>
+                <span id="zoom-level" class="small" aria-live="polite">100%</span>
+                <button type="button" class="btn btn-sm" id="zoom-in" aria-label="Zoom in">+</button>
+                <button type="button" class="btn btn-sm" id="rotate" aria-label="Rotate 90 degrees">Rotate</button>
+                <button type="button" class="btn btn-sm" id="reset-view">Reset</button>
+                <button type="button" class="btn btn-sm" id="toggle-ocr" aria-pressed="false">Raw OCR</button>
+              </div>
+              <div class="viewer-stage" id="viewer-stage">
+                <div class="viewer-canvas-wrap" id="canvas-wrap">
+                  <img id="evidence-img" alt="Selected evidence image" hidden>
+                  <div class="region-box" id="region-box" hidden></div>
+                </div>
+                <p id="viewer-empty" class="muted pad-2">No evidence selected.</p>
+              </div>
+              <div class="viewer-thumbs" id="thumbs" aria-label="Evidence faces"></div>
+              <div id="ocr-panel" hidden>
+                <div class="ocr-raw" id="ocr-raw" tabindex="0" aria-label="Raw OCR text"></div>
+              </div>
+            </div>
+
+            <!-- Right: candidates -->
+            <div class="candidates" aria-label="Candidates">
+              <div id="candidate-status" class="status-region" aria-live="polite"></div>
+              <div id="candidates" aria-busy="true"><p>Loading candidates…</p></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Findings -->
+        <section aria-labelledby="findings-h">
+          <h2 id="findings-h">Findings</h2>
+          <div id="findings"></div>
+        </section>
+
+        <!-- The decision belongs in the page, not in the sticky bar: it is a form to
+             be read and filled, and a bar tall enough to hold it covers the evidence
+             the officer is deciding on. -->
+        <section aria-labelledby="decision-h">
+          <h2 id="decision-h">Decision</h2>
+          <div id="decision-mount"></div>
+        </section>
+      </div>
+
+      <!-- Sticky action bar: status and actions only -->
+      <div class="action-bar" id="action-bar" hidden>
+        <div class="container">
+          <div class="between">
+            <div class="summary-line" id="findings-summary" aria-live="polite"></div>
+            <div class="btn-row">
+              <button type="button" class="btn" id="run-checks" data-permission="inspection.run_checks" hidden>Run checks</button>
+            </div>
+          </div>
+          <div class="transition-list" id="transitions"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/inspection.js"></script>
+</body>
+</html>

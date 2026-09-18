@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>File a complaint — Maanak</title>
+  <meta name="description" content="Report a problem with a packaged product. Keep the reference you receive to check status later.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow">
+      <h1>File a complaint</h1>
+      <p>Report a problem with a packaged product. You may report without giving your name. If you provide contact details you can be followed up and can check the status later.</p>
+
+      <div id="success" class="notice notice-ok" role="status" hidden>
+        <h2>Complaint received</h2>
+        <p>Your reference is <strong id="ref-value" class="mono"></strong>.</p>
+        <p><strong>Keep this reference.</strong> You will need it, together with the contact detail you supplied, to <a href="/complaint-status.html">check the status</a> of your complaint. It will not be shown again.</p>
+        <dl class="defs" id="success-detail"></dl>
+      </div>
+
+      <form id="complaint-form" novalidate>
+        <div id="form-status" class="status-region" aria-live="polite"></div>
+
+        <h2>The product</h2>
+        <div class="field">
+          <label for="product_name">Product name <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="product_name" name="product_name" required aria-required="true" maxlength="240" autocomplete="off">
+        </div>
+        <div class="row">
+          <div class="field grow-200">
+            <label for="brand">Brand</label>
+            <input type="text" id="brand" name="brand" maxlength="160">
+          </div>
+          <div class="field grow-200">
+            <label for="barcode_value">Barcode number</label>
+            <input type="text" id="barcode_value" name="barcode_value" maxlength="32" inputmode="numeric">
+          </div>
+        </div>
+        <div class="field">
+          <label for="category">What is the problem? <span class="req" aria-hidden="true">*</span></label>
+          <select id="category" name="category" required aria-required="true"></select>
+        </div>
+        <div class="field">
+          <label for="description">Describe what you saw <span class="req" aria-hidden="true">*</span></label>
+          <p class="hint" id="desc-hint">At least 20 characters. Do not include anyone's private information you do not need to share.</p>
+          <textarea id="description" name="description" required aria-required="true" minlength="20" maxlength="5000" aria-describedby="desc-hint"></textarea>
+        </div>
+
+        <h2>Where and when (optional)</h2>
+        <div class="row">
+          <div class="field grow-160">
+            <label for="purchase_date">Purchase date</label>
+            <input type="date" id="purchase_date" name="purchase_date">
+          </div>
+          <div class="field grow-200">
+            <label for="seller_name">Seller / shop</label>
+            <input type="text" id="seller_name" name="seller_name" maxlength="240">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field grow-200">
+            <label for="marketplace_name">Marketplace</label>
+            <input type="text" id="marketplace_name" name="marketplace_name" maxlength="160">
+          </div>
+          <div class="field grow-260">
+            <label for="listing_url">Listing web address</label>
+            <input type="url" id="listing_url" name="listing_url" maxlength="2000">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field grow-160">
+            <label for="stated_mrp">Printed MRP</label>
+            <input type="text" id="stated_mrp" name="stated_mrp" maxlength="40">
+          </div>
+          <div class="field grow-160">
+            <label for="stated_price_paid">Price you paid</label>
+            <input type="text" id="stated_price_paid" name="stated_price_paid" maxlength="40">
+          </div>
+          <div class="field grow-200">
+            <label for="location_text">Location</label>
+            <input type="text" id="location_text" name="location_text" maxlength="240">
+          </div>
+        </div>
+
+        <h2>Photographs (optional)</h2>
+        <div class="field">
+          <label for="package_images">Package images</label>
+          <p class="hint">JPEG, PNG or WebP. You can select more than one.</p>
+          <input type="file" id="package_images" name="package_images" accept="image/jpeg,image/png,image/webp" multiple>
+        </div>
+        <div class="field">
+          <label for="purchase_proof">Purchase proof (bill / receipt)</label>
+          <input type="file" id="purchase_proof" name="purchase_proof" accept="image/jpeg,image/png,image/webp,application/pdf">
+        </div>
+
+        <h2>Your contact details (optional)</h2>
+        <p class="hint">Provide an email or phone if you want to check status later or be contacted. Leave blank to report anonymously.</p>
+        <div class="row">
+          <div class="field grow-200">
+            <label for="contact_name">Your name</label>
+            <input type="text" id="contact_name" name="contact_name" maxlength="160" autocomplete="name">
+          </div>
+          <div class="field grow-220">
+            <label for="contact_email">Email</label>
+            <input type="email" id="contact_email" name="contact_email" autocomplete="email">
+          </div>
+          <div class="field grow-160">
+            <label for="contact_phone">Phone</label>
+            <input type="tel" id="contact_phone" name="contact_phone" maxlength="40" autocomplete="tel">
+          </div>
+        </div>
+        <div class="field checkbox-row">
+          <input type="checkbox" id="consent_to_contact" name="consent_to_contact">
+          <label for="consent_to_contact">You may contact me about this complaint using the details above.</label>
+        </div>
+
+        <h2>Privacy</h2>
+        <div class="notice notice-info" id="privacy-notice">
+          <p>What you submit, including any photographs and contact details, is used to assess your complaint and may be shared with the officers who handle it. Contact details are optional. If you give them, keep your reference so you can check progress later. The <a href="/privacy.html">privacy notice</a> sets out how long each category is kept and what you can ask for.</p>
+        </div>
+        <div class="field checkbox-row">
+          <input type="checkbox" id="privacy_notice_acknowledged" name="privacy_notice_acknowledged" required aria-required="true">
+          <label for="privacy_notice_acknowledged">I have read and understood the privacy notice. <span class="req" aria-hidden="true">*</span></label>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn btn-accent" id="submit-btn">Submit complaint</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+  <script type="module" src="/js/pages/complain.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Complaint status — Maanak</title>
+  <meta name="description" content="Check the status of a complaint using its reference and the contact detail you supplied.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow">
+      <h1>Check complaint status</h1>
+      <p>Enter the reference you received when you filed your complaint, together with the email or phone number you supplied at the time.</p>
+
+      <form id="status-form" novalidate>
+        <div id="form-status" class="status-region" aria-live="polite"></div>
+        <div class="field">
+          <label for="reference">Reference <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="reference" name="reference" required aria-required="true" minlength="6" maxlength="40" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="contact">Email or phone you supplied <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="contact" name="contact" required aria-required="true" minlength="5" maxlength="320" autocomplete="off">
+        </div>
+        <div class="btn-row">
+          <button type="submit" class="btn btn-primary" id="lookup-btn">Look up</button>
+        </div>
+      </form>
+
+      <section id="result" aria-live="polite"></section>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+  <script type="module" src="/js/pages/complaint-status.js"></script>
+</body>
+</html>

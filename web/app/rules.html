@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rules — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <div class="between">
+          <h1>Rules governance</h1>
+          <div class="btn-row">
+            <button class="btn" id="seed-rules" type="button" data-permission="rule.author" hidden>Seed baseline rules</button>
+          </div>
+        </div>
+        <div id="page-status" class="status-region" aria-live="polite"></div>
+        <div class="notice notice-warn">
+          <p>Seeded rule interpretations have not been endorsed by a statutory authority and their citations are not verified against the gazette. Confirm each rule's legal authority before enforcement use.</p>
+        </div>
+        <form id="filters" class="filters" role="search">
+          <div class="field grow">
+            <label for="f-search">Search</label>
+            <input type="search" id="f-search" name="search" placeholder="Code, title…">
+          </div>
+          <div class="field">
+            <label for="f-status">Status</label>
+            <select id="f-status" name="status"></select>
+          </div>
+          <div class="field checkbox-row self-center">
+            <input type="checkbox" id="f-effective" name="effective_only">
+            <label for="f-effective">Effective only</label>
+          </div>
+          <div class="field"><button class="btn" type="submit">Apply</button></div>
+        </form>
+        <div id="register" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/rules.js"></script>
+</body>
+</html>

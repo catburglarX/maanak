@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audit — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <div class="between">
+          <h1>Audit trail</h1>
+          <div class="btn-row">
+            <button class="btn" id="verify-chain" type="button">Verify chain</button>
+            <a class="btn" id="export-csv" href="/api/v1/audit/export.csv" target="_blank" rel="noopener">Export CSV</a>
+          </div>
+        </div>
+        <div id="verify-result" class="status-region" aria-live="polite"></div>
+        <form id="filters" class="filters" role="search">
+          <div class="field">
+            <label for="f-action">Action</label>
+            <select id="f-action" name="action"><option value="">Any action</option></select>
+          </div>
+          <div class="field">
+            <label for="f-entity">Entity type</label>
+            <input type="text" id="f-entity" name="entity_type" placeholder="e.g. inspection">
+          </div>
+          <div class="field">
+            <label for="f-since">Since</label>
+            <input type="date" id="f-since" name="since">
+          </div>
+          <div class="field">
+            <label for="f-until">Until</label>
+            <input type="date" id="f-until" name="until">
+          </div>
+          <div class="field"><button class="btn" type="submit">Apply</button></div>
+        </form>
+        <div id="register" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/audit.js"></script>
+</body>
+</html>

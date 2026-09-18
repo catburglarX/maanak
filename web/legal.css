@@ -1,0 +1,174 @@
+/* Legal and policy document typography.
+ *
+ * Loaded only by the policy pages. These documents are read in long form and get
+ * cited section by section, so they need a stated version, a contents list, linkable
+ * headings and a narrower measure than an application screen. Built from the tokens
+ * in styles.css.
+ */
+
+.legal-doc {
+  max-width: 46rem;
+}
+
+.legal-doc h1 {
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.75rem;
+}
+
+/* The standfirst: what the document is for, before any clause. */
+.legal-doc .standfirst {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--muted-strong);
+  margin: 0 0 1.75rem;
+}
+
+/* Document front matter. One line, the way a printed policy states its status:
+ * effective date first, then version, then what it replaces. The earlier version of
+ * this used a four-cell grid of stacked label/value pairs, which wrapped three then
+ * one and read as a data dump rather than a document header. */
+.doc-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.15rem;
+  margin: 0 0 2.25rem;
+  padding: 0.6rem 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.8125rem;
+  color: var(--muted-strong);
+  font-variant-numeric: tabular-nums;
+  max-width: none;
+}
+
+.doc-dates span:not(:first-child) {
+  border-left: 1px solid var(--rule-strong);
+  padding-left: 1.15rem;
+}
+
+.doc-dates b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.doc-toc {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  padding: 1.15rem 1.35rem;
+  margin: 0 0 2.5rem;
+}
+
+/* Scoped under .legal-doc so it outranks the section-heading rule below, which
+ * would otherwise give the contents label a 22px serif face and a top border. */
+.legal-doc .doc-toc h2 {
+  font-family: var(--sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted-strong);
+  margin: 0 0 0.75rem;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.doc-toc ol {
+  margin: 0;
+  padding-left: 1.35rem;
+  columns: 2;
+  column-gap: 2rem;
+}
+
+.doc-toc li {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+  break-inside: avoid;
+}
+
+.legal-doc h2 {
+  font-size: 1.375rem;
+  line-height: 1.25;
+  margin: 2.75rem 0 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule);
+  scroll-margin-top: 1rem;
+}
+
+.legal-doc h3 {
+  font-size: 1.0625rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+.legal-doc p,
+.legal-doc li {
+  font-size: 0.9688rem;
+  line-height: 1.7;
+}
+
+.legal-doc ul,
+.legal-doc ol {
+  padding-left: 1.35rem;
+}
+
+.legal-doc li {
+  margin: 0 0 0.5rem;
+}
+
+/* Definition pairs — used for retention periods and contact routes. */
+.legal-doc .defs dt {
+  font-size: 0.9375rem;
+}
+
+.legal-doc .table-wrap {
+  margin: 1.25rem 0;
+}
+
+/* Workspace registers stick their header row so column names survive scrolling. A
+ * four-row table in a policy document gains nothing from that, and a sticky header
+ * can obscure a focused control, which is what WCAG 2.2 SC 2.4.11 prohibits. */
+.legal-doc table.register thead th {
+  position: static;
+}
+
+/* The one thing every policy page has to say about itself. A left rule rather than a
+ * filled panel: this is a note in a document, not an alert in an interface. */
+.legal-doc .standing-caveat {
+  border-left: 2px solid var(--accent);
+  padding: 0.15rem 0 0.15rem 1.15rem;
+  margin: 0 0 2.5rem;
+}
+
+.legal-doc .standing-caveat p {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--muted-strong);
+}
+
+.legal-doc .standing-caveat p + p {
+  margin-top: 0.7rem;
+}
+
+.legal-doc .standing-caveat strong {
+  color: var(--ink);
+}
+
+.doc-foot {
+  margin-top: 3rem;
+  padding-top: 1.15rem;
+  border-top: 2px solid var(--ink);
+  font-size: 0.875rem;
+  color: var(--muted-strong);
+}
+
+.doc-foot p {
+  font-size: 0.875rem;
+}
+
+@media (max-width: 40rem) {
+  .doc-toc ol {
+    columns: 1;
+  }
+}

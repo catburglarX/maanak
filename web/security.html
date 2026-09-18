@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Security — Maanak</title>
+  <meta name="description" content="The security controls Maanak implements, the controls it does not, and how to report a vulnerability.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/legal.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow legal-doc">
+      <h1>Security</h1>
+      <p class="standfirst">What is implemented, with the parameters it is implemented at. What
+        is absent, named individually rather than gestured at. And what to do if you find
+        something wrong.</p>
+
+      <p class="doc-dates">
+        <span>Effective <b>18 September 2026</b></span>
+        <span>Version <b>2026-09</b></span>
+        <span>No independent assessment</span>
+      </p>
+
+      <div class="standing-caveat">
+        <p><strong>This deployment has not had an independent security assessment.</strong> No
+          penetration test, no code audit and no threat-modelling review by anyone outside the
+          people who wrote it. Everything in section 1 is designed and tested by the authors,
+          which is the weakest form of assurance there is.</p>
+      </div>
+
+      <nav class="doc-toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading">On this page</h2>
+        <ol>
+          <li><a href="#implemented">Controls that are implemented</a></li>
+          <li><a href="#tamper">Tamper evidence</a></li>
+          <li><a href="#absent">Controls that are absent</a></li>
+          <li><a href="#disclosure">Reporting a vulnerability</a></li>
+          <li><a href="#scope">Testing scope</a></li>
+          <li><a href="#incident">Incident reporting duties</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="implemented">Controls that are implemented</h2>
+
+      <h3>Authentication</h3>
+      <p>Passwords are hashed with Argon2id at 64 MiB of memory, time cost 3, parallelism 2.
+        The minimum length is 12 characters. Sign-in responses are equalised against a real
+        Argon2 hash so a missing account takes the same time as a wrong password, which stops
+        the endpoint being used to enumerate who has an account.</p>
+      <p>Sign-in is limited to 20 attempts per network address in any five-minute window. That
+        limiter fails closed: if the counter store cannot be reached, sign-in is refused. An
+        account locks for 15 minutes after repeated failures.</p>
+      <p>Sessions are cookie-only. The access cookie is HttpOnly, so no script can read it, and
+        there is no bearer token anywhere in the design. Access tokens last 15 minutes, refresh
+        tokens 14 days, and idle sessions expire after 8 hours. Refresh rotates the token and
+        the old one is revoked, so a stolen refresh token is usable once at most and its reuse
+        is detectable.</p>
+
+      <h3>Request integrity</h3>
+      <p>Every unsafe method requires a CSRF token echoed in a header and matched against a
+        second cookie. Request schemas reject unknown fields outright, so a request cannot set
+        a column the endpoint did not intend to expose.</p>
+      <p>The content security policy is <code>default-src 'self'</code>. No inline script, no
+        third-party origin, no external font, no analytics. The one exception is the object
+        storage origin, allowed for image and connection sources so that signed evidence links
+        resolve.</p>
+
+      <h3>Authorisation</h3>
+      <p>Jurisdiction is applied inside the SQL query, not filtered from results afterwards. A
+        record from another district cannot appear in a list, a count, a search result or an
+        export.</p>
+      <p>A request for a record outside your jurisdiction returns 404. Returning 403 would
+        confirm the record exists, and that is a disclosure in itself.</p>
+
+      <h3>Evidence handling</h3>
+      <p>Uploads are validated from their actual bytes rather than the filename or the declared
+        content type. Size is capped at 20 MB with a floor of 4 KB. Originals are hashed with
+        SHA-256 on receipt and stored unchanged.</p>
+      <p>Object storage runs with server-side encryption and versioning enabled. Evidence is
+        served through links that expire after 5 minutes. Derivative images are stripped of
+        metadata; originals keep theirs, because editing an original breaks the chain of
+        custody.</p>
+      <p>Location is never read from photograph metadata. A camera that writes GPS coordinates
+        into a file will have that field ignored.</p>
+
+      <h3>Logging</h3>
+      <p>Logs are scrubbed before they are written. Passwords, tokens, hashes, secrets,
+        authorisation headers, cookies and signature values are replaced with a redaction
+        marker wherever they appear, including inside nested structures. Metrics carry aggregate
+        counts only, with no identifiers.</p>
+
+      <h2 id="tamper">Tamper evidence</h2>
+      <p>The audit trail is append-only and enforced by the database, not by application code. A
+        trigger rejects <code>UPDATE</code> and <code>DELETE</code> on the audit table, so an
+        administrator with full application access still cannot edit history.</p>
+      <p>Each entry stores the hash of the entry before it. Inserting or altering an entry
+        breaks the chain from that point on, and verification reports the sequence number where
+        it broke and why. This has been tested by forging an insert directly in the database:
+        the check named the offending sequence and reported that its previous hash did not match
+        the preceding event.</p>
+      <p>Report snapshots, issued notices and evidence identity are immutable by trigger for the
+        same reason.</p>
+
+      <h2 id="absent">Controls that are absent</h2>
+      <p>Named individually, because a list of what is present is misleading without it.</p>
+      <ul>
+        <li><strong>TLS.</strong> This deployment serves plain HTTP. Cookies are therefore not
+          marked secure. Both must change before anything real touches it.</li>
+        <li><strong>Multi-factor authentication.</strong> A field exists to hold a secret;
+          nothing uses it. There is no second factor and no single sign-on.</li>
+        <li><strong>Malware scanning.</strong> Uploads are validated for type and size, not
+          scanned for malicious content.</li>
+        <li><strong>Secrets management.</strong> Secrets come from environment variables. There
+          is no managed vault and no automatic rotation.</li>
+        <li><strong>Monitoring and alerting.</strong> Nothing watches this system. Nobody would
+          be told if it were attacked.</li>
+        <li><strong>Backups.</strong> No backup schedule runs. A restore procedure is
+          documented but has never been executed end to end.</li>
+        <li><strong>Incident response.</strong> No process, no on-call, no defined severities.</li>
+        <li><strong>Independent testing.</strong> No penetration test and no external code
+          audit.</li>
+        <li><strong>Load testing.</strong> Behaviour under concurrent load is unmeasured, so
+          the rate limits are reasoned rather than tuned.</li>
+        <li><strong>Object-level authorisation sweep.</strong> Jurisdiction scoping is
+          implemented centrally and tested on the main paths. All 97 routes have not been
+          individually audited for it.</li>
+      </ul>
+      <p>Setting the environment to production causes the application to refuse to start while
+        several of these remain unsafe. It checks what is technically checkable and cannot check
+        the rest.</p>
+
+      <h2 id="disclosure">Reporting a vulnerability</h2>
+      <p><strong>No disclosure address is published, because no organisation operates this
+        deployment.</strong> There is nowhere to send a report and nobody who would act on
+        one.</p>
+      <p>A deployment must publish, before it opens to any real user:</p>
+      <ul>
+        <li>A dedicated address for security reports, monitored on working days.</li>
+        <li>An acknowledgement target, conventionally within three working days.</li>
+        <li>A safe-harbour statement: a researcher acting in good faith within a stated scope
+          will not be pursued.</li>
+        <li>A coordinated disclosure window, conventionally 90 days, with the option to agree
+          longer for something structural.</li>
+        <li>Whether a bounty is offered, so nobody has to guess.</li>
+      </ul>
+      <p>If you are looking at this code and find something, the honest answer is that the
+        repository is the only route and there is no service-level commitment behind it.</p>
+
+      <h2 id="scope">Testing scope</h2>
+      <p>If you are authorised to test a deployment of this software, these are reasonable
+        boundaries. They are conventions, not permission: permission comes from whoever runs the
+        instance.</p>
+      <p>Ordinarily in scope: the API, the browser application, authentication and session
+        handling, authorisation and jurisdiction boundaries, the upload path, and the report
+        verification endpoint.</p>
+      <p>Ordinarily out of scope: denial of service and volumetric testing, social engineering
+        of staff, physical access, and third-party infrastructure the operator does not control.
+        Automated scanners that generate real complaints or real inspections pollute an
+        evidential record, which is worse here than on an ordinary web application.</p>
+
+      <h2 id="incident">Incident reporting duties</h2>
+      <p>Two separate obligations apply in India, and they run on different clocks.</p>
+      <p>Directions issued under section 70B of the Information Technology Act, 2000 require
+        specified cyber security incidents to be reported to CERT-In within <strong>six
+        hours</strong>. That obligation is in force now.</p>
+      <p>Once the substantive provisions of the Digital Personal Data Protection Act, 2023
+        commence on 13 May 2027, a personal data breach must be notified to the Data Protection
+        Board of India and to every affected person without delay, with fuller detail to the
+        Board within <strong>72 hours</strong>. There is no severity threshold: every breach is
+        reportable.</p>
+      <p>This deployment has no detection capability, so it could not meet either clock. Saying
+        otherwise would be a claim with nothing behind it.</p>
+
+      <div class="doc-foot">
+        <p>Related: <a href="/privacy.html">privacy notice</a>,
+          <a href="/terms.html">terms of use</a>,
+          <a href="/responsible-use.html">responsible use</a>.</p>
+      </div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+</body>
+</html>

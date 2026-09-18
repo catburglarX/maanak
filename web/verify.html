@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verify a report — Maanak</title>
+  <meta name="description" content="Confirm that a report reference was issued by this workspace and its content is unchanged.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow">
+      <h1>Verify a report</h1>
+      <p>Enter the report reference or the verification code printed on the document. This confirms that a report was issued and that its stored content is unchanged. It does not reveal the inspection itself.</p>
+
+      <form id="verify-form" novalidate>
+        <div id="form-status" class="status-region" aria-live="polite"></div>
+        <div class="field">
+          <label for="reference">Report reference</label>
+          <input type="text" id="reference" name="reference" maxlength="40" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="code">Verification code</label>
+          <input type="text" id="code" name="code" maxlength="24" autocomplete="off">
+        </div>
+        <p class="hint">Enter at least one. If you enter both, both must match.</p>
+        <div class="btn-row">
+          <button type="submit" class="btn btn-primary" id="verify-btn">Verify</button>
+        </div>
+      </form>
+
+      <section id="result" aria-live="polite"></section>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+  <script type="module" src="/js/pages/verify.js"></script>
+</body>
+</html>

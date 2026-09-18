@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overview — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <h1>Overview</h1>
+        <p class="workspace-sub">Live counts from the workspace. Nothing here is estimated.</p>
+        <div id="health" class="status-region" aria-live="polite"></div>
+
+        <h2>Outstanding work</h2>
+        <div id="metrics" class="metrics" aria-busy="true"></div>
+
+        <h2>Assigned to you</h2>
+        <div id="mine"></div>
+      </div>
+    </main>
+    <div id="app-footer"></div>
+  </div>
+  <script type="module" src="/js/pages/overview.js"></script>
+</body>
+</html>

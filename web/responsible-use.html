@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Responsible use — Maanak</title>
+  <meta name="description" content="How Maanak keeps machine observation separate from officer decision, why absent evidence is never a violation, and what the system refuses to do.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/legal.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow legal-doc">
+      <h1>Responsible use</h1>
+      <p class="standfirst">Automation in enforcement goes wrong in a predictable way: a
+        machine guess gets recorded as a finding, the finding gets quoted as a fact, and by the
+        time anybody asks how it was reached the working has been thrown away. Most of the
+        design decisions here exist to make that specific failure impossible.</p>
+
+      <p class="doc-dates">
+        <span>Effective <b>18 September 2026</b></span>
+        <span>Version <b>2026-09</b></span>
+        <span>No automated decisions</span>
+      </p>
+
+      <nav class="doc-toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading">On this page</h2>
+        <ol>
+          <li><a href="#observation">Observation is not decision</a></li>
+          <li><a href="#absent">Absent evidence is never a violation</a></li>
+          <li><a href="#working">Findings show their working</a></li>
+          <li><a href="#height">Why height is not read from pixels</a></li>
+          <li><a href="#duties">Separation of duties on interpretations</a></li>
+          <li><a href="#authority">Honesty about legal authority</a></li>
+          <li><a href="#refuses">What the system refuses to do</a></li>
+          <li><a href="#misuse">Foreseeable misuse</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="observation">Observation is not decision</h2>
+      <p>Two records exist for every declaration, and they are never merged.</p>
+      <p>The machine record holds what optical character recognition found, with a state drawn
+        from a fixed list: located, not detected, unreadable, ambiguous, incomplete evidence, or
+        processing failed. It carries a confidence figure and the coordinates of the region it
+        came from.</p>
+      <p>The officer record holds a review state: pending, confirmed, rejected, corrected or not
+        applicable. Only an officer writes it.</p>
+      <p>A correction does not overwrite the machine reading. It writes a revision above it, so
+        the original survives and both appear in the report. Somebody reading that report later
+        can see that the machine read one thing, an officer read another, and which one the
+        conclusion rests on.</p>
+      <p>Only reviewed values reach the rule engine. An unreviewed machine reading cannot
+        produce a finding, which is enforced in the engine rather than left to the interface.</p>
+
+      <h2 id="absent">Absent evidence is never a violation</h2>
+      <p>Three situations look similar on a screen and mean entirely different things:</p>
+      <ul>
+        <li>The package genuinely lacks a required declaration.</li>
+        <li>The photograph does not show the panel where it would be.</li>
+        <li>The panel is visible but the text cannot be read, because of glare, blur or
+          damage.</li>
+      </ul>
+      <p>Only the first is a compliance failure. The second returns additional evidence
+        required. The third returns unable to determine. Neither is reported as
+        non-compliant, and no setting changes that.</p>
+      <p>This is measurable rather than aspirational. Running the checks on an inspection before
+        officer review produces seven results of additional evidence required, three of unable
+        to determine, and zero non-compliant. After review of the same evidence, ten rules apply
+        and one non-compliant finding appears. The difference is the review, not the
+        photograph.</p>
+
+      <h2 id="working">Findings show their working</h2>
+      <p>A finding records the rule version applied, its citation, why that version was selected
+        for this inspection date, the input values, and the arithmetic.</p>
+      <p>Unit price is the clearest case. Where a printed unit price disagrees with price divided
+        by quantity, the finding lists every step of the calculation, currently eight of them,
+        with the rounding rule stated and the tolerance named. A reviewer can redo the sum on
+        paper and get the same answer, or find the point where they disagree.</p>
+      <p>All money and quantity arithmetic uses exact decimal values, never floating point, and
+        rounds half-up to the paise. A rounding difference in the third decimal place is not
+        going to be the reason somebody is found non-compliant.</p>
+
+      <h2 id="height">Why height is not read from pixels</h2>
+      <p>Some requirements are about physical size. A minimum character height in millimetres is
+        one of them.</p>
+      <p>A photograph cannot answer that question. The same letter fills more pixels from closer
+        and fewer from further away, and without a known scale in frame there is no conversion.
+        Software that estimated millimetres from pixels would produce a number that looked
+        authoritative and meant nothing.</p>
+      <p>So the check refuses. Without an officer's measurement it returns additional evidence
+        required and explains what is needed. When a measurement is supplied it is compared
+        against the threshold together with the stated uncertainty, and a measurement whose
+        uncertainty band crosses the threshold returns unable to determine rather than a decision
+        that could not be defended if challenged.</p>
+
+      <h2 id="duties">Separation of duties on interpretations</h2>
+      <p>A rule interpretation is an opinion about what the law requires. Treating it as
+        configuration would let one person change the meaning of the law for everybody, quietly.</p>
+      <p>So interpretations are versioned and governed. The author of a version cannot approve
+        it; the attempt is refused. Approval is blocked until the version has been simulated
+        against every mandatory scenario, so nobody approves something whose behaviour they have
+        not seen. An approved version is immutable. Changing an interpretation creates a new
+        version and the old one stays inspectable, because a report issued last year was issued
+        under last year's interpretation and has to remain readable on those terms.</p>
+      <p>Each version carries an effective window. A rule not yet in force on the inspection date
+        does not apply to it, and neither does one that had already ended.</p>
+
+      <h2 id="authority">Honesty about legal authority</h2>
+      <p>Every rule version has a flag recording whether its legal authority has been confirmed
+        by somebody qualified to confirm it. For all eleven versions that ship with this
+        software, that flag is <strong>false</strong>.</p>
+      <p>That flag is not buried. It shows on the rule, on every finding that uses it, and it
+        prints on the report. An officer cannot use one of these interpretations without being
+        told, in the same screen, that its citation has not been checked against the gazette.</p>
+      <p>The alternative would be to ship confident-looking citations transcribed from memory.
+        That would be worse than useless: it would be actively misleading, and the mistake would
+        surface at the worst possible moment, in front of somebody contesting a finding.
+        <a href="/legal-sources.html">The legal sources page</a> sets out exactly which values
+        are placeholders and what has to be done to each.</p>
+
+      <h2 id="refuses">What the system refuses to do</h2>
+      <ul>
+        <li>Issue any enforcement action by itself. Every decision is recorded against a named
+          officer with a written reason.</li>
+        <li>Produce an overall compliance score. A single number would hide which requirement
+          failed and how certain anybody was about it.</li>
+        <li>Assert that a package is genuine. A readable barcode shows an identifier is printed
+          on a package. It is not proof of anything else.</li>
+        <li>Verify the contents of a package. Net quantity needs weighing or measuring, and every
+          report says so in its limits section.</li>
+        <li>Identify a person. There is no face recognition and no biometric matching of any
+          kind.</li>
+        <li>Give medical, nutritional or legal advice.</li>
+        <li>Rank or profile manufacturers by predicted risk. Nothing here builds a watchlist.</li>
+      </ul>
+
+      <h2 id="misuse">Foreseeable misuse</h2>
+      <p>Worth naming, because a design document that only lists safeguards is not being
+        straight about the risks.</p>
+      <p><strong>An unconfirmed interpretation used to pressure a trader.</strong> The flag warns
+        but cannot stop an officer quoting a finding at somebody who has no way to evaluate it.
+        The mitigation is procedural: the deploying authority confirms interpretations before
+        officers use them in the field, and the report carries the flag into any conversation
+        where it is produced.</p>
+      <p><strong>Selective inspection.</strong> The system records what officers inspect. It
+        cannot tell whether the choice of what to inspect was fair. Pattern review of inspection
+        distribution is a supervisory task and this software does not do it.</p>
+      <p><strong>Evidence framing.</strong> A photograph is a choice about what to include. An
+        officer can photograph a panel in a way that makes a declaration hard to read. The
+        quality signals will report glare and blur, which makes it visible, but they cannot
+        establish intent.</p>
+      <p><strong>Complainant identification.</strong> A free-text description can contain enough
+        detail to identify who complained, particularly in a small market. The form asks for the
+        product rather than the person, and no public endpoint returns contact details, but
+        nothing prevents somebody writing identifying detail into a description box.</p>
+      <p>None of these is solved by code. They are the reasons a system like this belongs under
+        supervision rather than running on its own.</p>
+
+      <div class="doc-foot">
+        <p>Related: <a href="/legal-sources.html">legal sources</a>,
+          <a href="/privacy.html">privacy notice</a>,
+          <a href="/terms.html">terms of use</a>.</p>
+      </div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+</body>
+</html>

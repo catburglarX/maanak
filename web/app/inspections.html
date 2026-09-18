@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inspections — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <div class="between">
+          <h1>Inspections</h1>
+          <button class="btn btn-primary" id="new-inspection" type="button" data-permission="inspection.create" hidden>New inspection</button>
+        </div>
+
+        <form id="filters" class="filters" role="search">
+          <div class="field grow">
+            <label for="f-search">Search</label>
+            <input type="search" id="f-search" name="search" placeholder="Reference, premises, product…">
+          </div>
+          <div class="field">
+            <label for="f-state">State</label>
+            <select id="f-state" name="state"></select>
+          </div>
+          <div class="field">
+            <label for="f-decided">Decided</label>
+            <select id="f-decided" name="decided">
+              <option value="">Any</option>
+              <option value="true">Decided</option>
+              <option value="false">Not decided</option>
+            </select>
+          </div>
+          <div class="field checkbox-row self-center">
+            <input type="checkbox" id="f-mine" name="assigned_to_me">
+            <label for="f-mine">Assigned to me</label>
+          </div>
+          <div class="field">
+            <button class="btn" type="submit">Apply</button>
+          </div>
+        </form>
+
+        <div id="register" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/inspections.js"></script>
+</body>
+</html>

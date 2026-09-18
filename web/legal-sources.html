@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Legal sources — Maanak</title>
+  <meta name="description" content="Exactly which rule interpretations Maanak ships, which citations are unverified, which values are placeholders, and what must be done to each before use.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/legal.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow legal-doc">
+      <h1>Legal sources</h1>
+      <p class="standfirst">Every rule interpretation this software ships, the citation attached
+        to it, and the reason none of them should be relied on yet. This page exists so that
+        nobody has to take the workspace at its word.</p>
+
+      <p class="doc-dates">
+        <span>Reviewed <b>18 September 2026</b></span>
+        <span><b>11</b> interpretations</span>
+        <span><b>0</b> citations verified against a gazette notification</span>
+      </p>
+
+      <div class="standing-caveat">
+        <p><strong>No citation in this system has been verified against a gazette
+          notification.</strong> All eleven interpretations are created with their legal
+          authority flag set to false and a note recording that the citation, the quoted
+          requirement and the effective date each need confirmation by a qualified authority.</p>
+        <p>This is the actual state of the data, not a disclaimer added for caution. The flag is
+          stored on the record, shown on every finding that uses it, and printed on every
+          report.</p>
+      </div>
+
+      <nav class="doc-toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading">On this page</h2>
+        <ol>
+          <li><a href="#why">Why nothing is verified</a></li>
+          <li><a href="#verified">What is verified</a></li>
+          <li><a href="#set">The eleven interpretations</a></li>
+          <li><a href="#placeholders">Values that are placeholders</a></li>
+          <li><a href="#height">The character height rule</a></li>
+          <li><a href="#confirm">How to confirm a version</a></li>
+          <li><a href="#sources">Sources that should be used</a></li>
+          <li><a href="#notdecide">What Maanak does not decide</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="why">Why nothing is verified</h2>
+      <p>The Legal Metrology (Packaged Commodities) Rules, 2011 came into force on 1 April 2011
+        under the Legal Metrology Act, 2009. That much is confirmed.</p>
+      <p>The rule text itself could not be retrieved from an authoritative source while this
+        software was built. Searching for the declaration text returned commentary and
+        state-level guidance rather than the rule. Searching for the character-height table
+        returned unrelated foreign regulations. A state Legal Metrology guideline document was
+        published as a PDF that could not be read programmatically.</p>
+      <p>At that point there were two options. Transcribe citations from memory and present them
+        as verified, or record them as supplied text and flag every one as unconfirmed. The
+        second is what happened. A confident citation that turns out to be wrong is worse than
+        an honest gap, because the mistake surfaces in front of somebody contesting a
+        finding.</p>
+
+      <h2 id="verified">What is verified</h2>
+      <p>The mechanics are implemented and tested, and that is a separate question from whether a
+        citation string is correct. What the engine does holds regardless:</p>
+      <ul>
+        <li>A declaration absent from fully captured evidence is treated as non-compliant.</li>
+        <li>A declaration that could not be read is never treated as a violation.</li>
+        <li>Unit price arithmetic is exact and rounds half-up to the paise.</li>
+        <li>Quantity band boundaries do not overlap: lower inclusive, upper exclusive.</li>
+        <li>A rule not in force on the inspection date does not apply, and neither does one that
+          had already ended.</li>
+        <li>A recorded exception removes the requirement.</li>
+        <li>Character height is never inferred from pixels.</li>
+        <li>Only approved or active versions can affect an inspection.</li>
+        <li>The author of a version cannot approve it.</li>
+        <li>Approval is refused until the simulator covers every mandatory scenario.</li>
+      </ul>
+      <p>One item on this page is implemented from a published specification and confirmed
+        arithmetically: the GS1 modulo-10 check digit. The calculation is worked through by hand
+        in the test suite against the identifier <code>890103086527</code> and the result
+        asserted. It is the only citation-like claim here that has been checked end to end.</p>
+
+      <h2 id="set">The eleven interpretations</h2>
+      <p>Each ships as a draft. The citation column is the string stored on the record. The
+        gazette reference field is empty on all eleven.</p>
+      <div class="table-wrap">
+        <table class="register">
+          <caption>Starter interpretations, all with legal authority unconfirmed</caption>
+          <thead>
+            <tr>
+              <th scope="col">Subject</th>
+              <th scope="col">Citation as stored</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Manufacturer, packer or importer name and address</td><td>Rule 6(1)(a)</td></tr>
+            <tr><td>Common or generic name of the commodity</td><td>Rule 6(1)(b)</td></tr>
+            <tr><td>Net quantity declared</td><td>Rule 6(1)(c)</td></tr>
+            <tr><td>Net quantity uses a permitted unit</td><td>Rule 6(1)(c), with the unit lists</td></tr>
+            <tr><td>Month and year of manufacture, packing or import</td><td>Rule 6(1)(d)</td></tr>
+            <tr><td>Retail sale price declared</td><td>Rule 6(1)(e)</td></tr>
+            <tr><td>Retail sale price carries the prescribed wording</td><td>Rule 6(1)(e), with the phrase list</td></tr>
+            <tr><td>Consumer care contact</td><td>Rule 6(1)(f)</td></tr>
+            <tr><td>Country of origin on imported packages</td><td>Rule 6(1), as amended</td></tr>
+            <tr><td>Unit sale price agrees with price divided by quantity</td><td>Rule 6 read with Rule 2</td></tr>
+            <tr><td>Minimum character height</td><td>Rule 9</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>No food safety regulation is implemented. Earlier versions of this page mentioned food
+        labelling rules; that was wrong, and no rule in this system derives from the Food Safety
+        and Standards regulations. If food-specific labelling is needed, it has to be added as
+        new interpretations and governed the same way.</p>
+
+      <h2 id="placeholders">Values that are placeholders</h2>
+      <p>Some interpretations carry numbers that were chosen to make the engine testable rather
+        than because they are correct. These are the ones to fix first.</p>
+      <div class="table-wrap">
+        <table class="register">
+          <caption>Placeholder values and what each needs</caption>
+          <thead>
+            <tr>
+              <th scope="col">Subject</th>
+              <th scope="col">Placeholder</th>
+              <th scope="col">What must be done</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Minimum character height</td>
+              <td>A single value of 1.0 mm</td>
+              <td>The prescribed minimum varies with the area of the principal display panel. The
+                applicable table must be transcribed and entered before approval.</td>
+            </tr>
+            <tr>
+              <td>Permitted net quantity units</td>
+              <td>Unit lists</td>
+              <td>Drawn from ordinary retail practice, not from the Second Schedule. Must be
+                confirmed and corrected.</td>
+            </tr>
+            <tr>
+              <td>Retail price wording</td>
+              <td>Accepted phrase list</td>
+              <td>Wording that is legally acceptable but missing from the list would produce a
+                wrong finding.</td>
+            </tr>
+            <tr>
+              <td>Unit sale price</td>
+              <td>Reference quantity 100, tolerance 1 paisa</td>
+              <td>Both the reference quantity and whether a unit price is required at all must be
+                confirmed. The tolerance is an engineering choice and prints on every
+                finding.</td>
+            </tr>
+            <tr>
+              <td>All eleven</td>
+              <td>Effective from 1 April 2011</td>
+              <td>The commencement date of the 2011 Rules is confirmed, but per-amendment dates
+                must be entered where a rule was later amended.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="height">The character height rule</h2>
+      <p>A minimum height in millimetres cannot be derived from a photograph. Pixels become
+        millimetres only when the scale is known, and the same pixel height means different
+        millimetres at different camera distances.</p>
+      <p>The check refuses to guess. Without an officer measurement it returns additional evidence
+        required and says what is needed. With a measurement, it compares against the threshold
+        together with the stated uncertainty, and a measurement whose band straddles the
+        threshold returns unable to determine.</p>
+      <p>The consequence matters: an unconfirmed threshold cannot quietly produce a violation.</p>
+
+      <h2 id="confirm">How to confirm a version</h2>
+      <ol>
+        <li>Retrieve the gazette notification in force on the relevant date.</li>
+        <li>Compare its citation text, requirement and effective window against the stored
+          citation, explanation and effective dates.</li>
+        <li>Correct anything that differs. A draft version is editable; an approved one is not,
+          and a corrected interpretation becomes a new version so the old one stays
+          inspectable.</li>
+        <li>Run the simulator and confirm every mandatory scenario passes.</li>
+        <li>Have a second rule administrator approve it. The author cannot.</li>
+        <li>Record the statutory confirmation separately, naming who confirmed it and on what
+          basis.</li>
+      </ol>
+      <p>Steps 4 and 5 are enforced by the software. Steps 1 to 3 and step 6 are human work that
+        software cannot do, and this system is explicit about not having done them.</p>
+      <p>Officers can read each interpretation's citation, explanation and uncertainty note in
+        the workspace under <a href="/app/rules.html">Rules</a> after signing in.</p>
+
+      <h2 id="sources">Sources that should be used</h2>
+      <p>In order of authority. The status column records how each was actually used, which is
+        not the same as which ones exist.</p>
+      <div class="table-wrap">
+        <table class="register">
+          <caption>Source material and how it was used</caption>
+          <thead>
+            <tr>
+              <th scope="col">Source</th>
+              <th scope="col">How it was used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>The gazette notification for each amendment</td>
+              <td><strong>Not consulted.</strong> This is the gap.</td>
+            </tr>
+            <tr>
+              <td>Department of Consumer Affairs, Legal Metrology Act
+                (<code>consumeraffairs.gov.in</code>)</td>
+              <td>Recorded as the source URL on every interpretation. Content was not transcribed
+                from it.</td>
+            </tr>
+            <tr>
+              <td>Legal Metrology division, Department of Consumer Affairs
+                (<code>doca.gov.in</code>)</td>
+              <td>Not used.</td>
+            </tr>
+            <tr>
+              <td>GS1 General Specifications</td>
+              <td>The modulo-10 check digit is implemented from its published definition and
+                verified arithmetically.</td>
+            </tr>
+            <tr>
+              <td>Food Safety and Standards regulations</td>
+              <td>Not consulted. No rule here derives from them.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The law in force on the inspection date governs, not the law today. That is why every
+        interpretation carries an effective window and why the engine selects by date rather than
+        using the newest version available.</p>
+
+      <h2 id="notdecide">What Maanak does not decide</h2>
+      <ul>
+        <li>No penalty, fine, compounding or prosecution.</li>
+        <li>No assertion that a package is genuine. A readable barcode shows an identifier is
+          printed on a package and nothing more.</li>
+        <li>No verification of net quantity. That requires weighing or measuring, and every
+          report states it as a limit.</li>
+        <li>No medical, nutritional or legal advice.</li>
+      </ul>
+
+      <div class="doc-foot">
+        <p>Related: <a href="/responsible-use.html">responsible use</a>,
+          <a href="/terms.html">terms of use</a>,
+          <a href="/privacy.html">privacy notice</a>.</p>
+      </div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+</body>
+</html>

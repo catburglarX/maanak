@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rule — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <div id="page-status" class="status-region" aria-live="polite"></div>
+        <div id="detail" aria-busy="true"><p>Loading rule…</p></div>
+
+        <section aria-labelledby="sim-h" id="sim-section" hidden>
+          <h2 id="sim-h">Simulator</h2>
+          <p class="workspace-sub">Run the rule against seeded and generated scenarios. Approval requires the deterministic scenarios to pass.</p>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="run-sim" type="button">Run simulation</button>
+          </div>
+          <div id="sim-result" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/rule.js"></script>
+</body>
+</html>

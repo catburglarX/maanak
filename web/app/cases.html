@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cases — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <h1>Cases</h1>
+        <p class="workspace-sub">Enforcement cases opened from inspections. Notice text is frozen when issued.</p>
+        <form id="filters" class="filters" role="search">
+          <div class="field">
+            <label for="f-state">State</label>
+            <select id="f-state" name="state"></select>
+          </div>
+          <div class="field checkbox-row self-center">
+            <input type="checkbox" id="f-overdue" name="overdue_only">
+            <label for="f-overdue">Overdue only</label>
+          </div>
+          <div class="field"><button class="btn" type="submit">Apply</button></div>
+        </form>
+        <div id="register" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/cases.js"></script>
+</body>
+</html>

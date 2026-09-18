@@ -1,0 +1,201 @@
+/* Workspace chrome and the inspection split-review screen. */
+
+.app-shell { display: flex; min-height: 100vh; flex-direction: column; }
+
+.app-header {
+  border-bottom: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--white);
+}
+.app-header .bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.6rem 1.25rem; flex-wrap: wrap;
+}
+.app-header .brand { color: var(--white); gap: 0.7rem; }
+/* The logo artwork carries the name, so this is only the label that separates the
+ * officer workspace from the public site. It sits on the mark's baseline. */
+.app-header .brand .brand-sub {
+  color: #cbc7bd;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  border-left: 1px solid rgba(255, 255, 255, 0.28);
+  padding-left: 0.7rem;
+}
+.app-nav { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.app-nav .nav-primary, .app-nav .nav-secondary { display: flex; gap: 0.15rem; flex-wrap: wrap; }
+/* Secondary items are reference registers and administration. A separator and a
+ * lighter weight keep them from competing with the daily work. */
+.app-nav .nav-secondary {
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  padding-left: 0.75rem;
+}
+.app-nav .nav-secondary a { color: #cbc7bd; font-size: 0.84rem; }
+.app-nav .nav-secondary a:hover { color: var(--white); }
+.app-nav a {
+  color: var(--white); text-decoration: none; padding: 0.4rem 0.6rem; font-size: 0.9rem;
+  border-radius: var(--radius); min-height: 24px; display: inline-flex; align-items: center;
+}
+.app-nav a:hover { background: rgba(255,255,255,0.12); color: var(--white); }
+.app-nav a[aria-current="page"] { background: var(--accent); color: var(--white); }
+.app-user { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; }
+/* Name and role are separate lines: as inline spans they ran together, reading as
+ * "District ReviewerReviewer · Gurugram district". */
+.app-user .who {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.3;
+}
+.app-user .who .name { font-weight: 600; }
+.app-user .who .role { color: #cbc7bd; font-size: 0.78rem; }
+
+.app-main { flex: 1; }
+
+/* Split review layout */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+/* Evidence viewer */
+.viewer {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  position: sticky;
+  top: 0.5rem;
+}
+.viewer-toolbar { display: flex; gap: 0.4rem; padding: 0.5rem; border-bottom: 1px solid var(--rule); flex-wrap: wrap; background: var(--panel); align-items: center; }
+.viewer-stage {
+  position: relative;
+  overflow: auto;
+  max-height: 62vh;
+  min-height: 320px;
+  background:
+    repeating-conic-gradient(#e6e3db 0% 25%, #efece4 0% 50%) 0 / 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.viewer-canvas-wrap { position: relative; transform-origin: center center; }
+.viewer-canvas-wrap img { display: block; max-width: none; }
+.region-box {
+  position: absolute;
+  border: 2px solid var(--accent);
+  background: rgba(122,43,43,0.14);
+  box-shadow: 0 0 0 9999px rgba(20,20,20,0.30);
+  pointer-events: none;
+}
+.viewer-thumbs { display: flex; gap: 0.4rem; padding: 0.5rem; border-top: 1px solid var(--rule); overflow-x: auto; background: var(--panel); }
+.viewer-thumbs button {
+  border: 2px solid var(--rule-strong); background: var(--white); padding: 0.15rem; cursor: pointer;
+  border-radius: var(--radius); min-height: 44px;
+}
+.viewer-thumbs button[aria-pressed="true"] { border-color: var(--accent); }
+.viewer-thumbs img { display: block; height: 48px; width: auto; }
+.viewer-thumbs .thumb-face { font-size: 0.65rem; display: block; text-align: center; color: var(--muted); max-width: 72px; }
+
+/* Candidate list */
+.candidate-group { margin: 0 0 1.25rem; }
+.candidate-group > h3 { border-bottom: 1px solid var(--rule); padding-bottom: 0.25rem; }
+.candidate {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.8rem;
+  margin: 0 0 0.6rem;
+  background: var(--white);
+  cursor: pointer;
+}
+.candidate[data-selected="true"] { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+/* The declaration name is the control that selects the candidate and highlights its
+ * region on the image. Styled as text so the card still reads as a record. */
+.candidate .cand-select {
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  cursor: pointer;
+  min-height: 24px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--rule-strong);
+}
+.candidate .cand-select:hover { text-decoration-color: var(--accent); color: var(--accent); }
+.candidate .cand-select[aria-pressed="true"] { text-decoration-color: var(--accent); }
+.candidate .cand-head { display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; align-items: baseline; }
+.candidate .states { display: flex; gap: 0.4rem; flex-wrap: wrap; margin: 0.35rem 0; }
+.candidate .matched { font-family: var(--mono); font-size: 0.85rem; background: var(--panel); padding: 0.3rem 0.5rem; border-radius: var(--radius); border: 1px solid var(--rule); white-space: pre-wrap; word-break: break-word; }
+.candidate .conf { font-size: 0.8rem; color: var(--muted-strong); }
+.candidate .review-controls { margin-top: 0.5rem; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.candidate .review-form { margin-top: 0.5rem; }
+
+/* Coverage checklist */
+.coverage-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.5rem; }
+.coverage-item { border: 1px solid var(--rule); border-radius: var(--radius); padding: 0.5rem 0.6rem; background: var(--white); font-size: 0.88rem; }
+.coverage-item .face-name { font-weight: 600; display: block; }
+
+/* Findings */
+.finding {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--muted-strong);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  margin: 0 0 0.8rem;
+  background: var(--white);
+}
+.finding.out-non_compliant { border-left-color: var(--red); }
+.finding.out-compliant { border-left-color: var(--green); }
+.finding.out-unable_to_determine { border-left-color: var(--amber); }
+.finding.out-additional_evidence_required { border-left-color: var(--amber); }
+.finding.out-not_applicable { border-left-color: var(--grey); }
+.finding .rule-block { border-top: 1px dashed var(--rule); margin-top: 0.6rem; padding-top: 0.6rem; font-size: 0.9rem; }
+.finding .compare { display: grid; grid-template-columns: max-content 1fr; gap: 0.2rem 1rem; font-size: 0.9rem; margin: 0.4rem 0; }
+.finding .compare dt { font-weight: 600; color: var(--muted-strong); }
+.finding .compare dd { margin: 0; }
+
+/* Sticky action bar */
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  background: var(--ink);
+  color: var(--white);
+  border-top: 2px solid var(--accent);
+  padding: 0.75rem 1.25rem;
+  margin-top: 1.5rem;
+  z-index: 20;
+}
+.action-bar .btn { border-color: var(--white); }
+.action-bar .summary-line { font-size: 0.9rem; }
+/* .small and .muted are tuned for a white page. On the dark bar they fall to about
+ * 1.5:1, so they are lightened here: #c6ccd4 measures 11:1 and #aab3bd 8.4:1 against
+ * #101820. */
+.action-bar .small { color: #c6ccd4; }
+.action-bar .muted, .action-bar .small.muted { color: #aab3bd; }
+.action-bar strong { color: var(--white); }
+.action-bar .transition-list { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.action-bar .blocked { opacity: 0.65; }
+.action-bar .blocked-reason { font-size: 0.78rem; color: #e8c9c4; display: block; }
+
+/* Job progress */
+.job { border: 1px solid var(--rule); border-radius: var(--radius); padding: 0.6rem 0.8rem; margin: 0.5rem 0; background: var(--white); }
+.progress-track { background: var(--panel-2); border: 1px solid var(--rule); border-radius: var(--radius); height: 14px; overflow: hidden; }
+.progress-fill { background: var(--accent); height: 100%; width: 0; }
+
+/* Quality signals */
+.signal { display: flex; gap: 0.5rem; align-items: baseline; padding: 0.25rem 0; border-bottom: 1px solid var(--rule); font-size: 0.88rem; }
+.signal:last-child { border-bottom: 0; }
+
+.workspace-sub { font-size: 0.85rem; color: var(--muted-strong); margin: 0 0 1rem; }
+
+/* OCR raw view */
+.ocr-raw { font-family: var(--mono); font-size: 0.82rem; white-space: pre-wrap; word-break: break-word; background: var(--white); border: 1px solid var(--rule); padding: 0.6rem; border-radius: var(--radius); max-height: 320px; overflow: auto; }

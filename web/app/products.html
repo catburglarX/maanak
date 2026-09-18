@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Products — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <div class="between">
+          <h1>Products</h1>
+          <button class="btn btn-primary" id="new-product" type="button" data-permission="product.create" hidden>New product</button>
+        </div>
+        <form id="filters" class="filters" role="search">
+          <div class="field grow">
+            <label for="f-search">Search</label>
+            <input type="search" id="f-search" name="search" placeholder="Brand, name…">
+          </div>
+          <div class="field">
+            <label for="f-barcode">Barcode</label>
+            <input type="text" id="f-barcode" name="barcode" inputmode="numeric">
+          </div>
+          <div class="field"><button class="btn" type="submit">Apply</button></div>
+        </form>
+        <div id="register" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/products.js"></script>
+</body>
+</html>

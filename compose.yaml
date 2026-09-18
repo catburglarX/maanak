@@ -1,0 +1,195 @@
+# Maanak local deployment.
+#
+#   cp .env.example .env      # then set POSTGRES_PASSWORD, JWT_SECRET, S3_SECRET_KEY
+#   docker compose up --build
+#
+# Services
+#   db      PostgreSQL 16, the only relational database
+#   redis   job queue and rate-limit counters
+#   minio   S3-compatible object storage for evidence and reports
+#   migrate one-shot: alembic upgrade head, then exits
+#   api     FastAPI application
+#   worker  arq worker running OCR and analysis
+#   web     nginx serving the browser application and proxying /api
+
+name: maanak
+
+x-app-env: &app-env
+  PYTHONPATH: /app
+  MAANAK_ENV: ${MAANAK_ENV:-development}
+  DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-maanak}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-maanak}
+  REDIS_URL: redis://redis:6379/0
+  JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+  JWT_SECRET_PREVIOUS: ${JWT_SECRET_PREVIOUS:-}
+  S3_ENDPOINT_URL: http://minio:9000
+  S3_PUBLIC_ENDPOINT_URL: ${S3_PUBLIC_ENDPOINT_URL:-http://localhost:9000}
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:-maanak}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:?set S3_SECRET_KEY in .env}
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080}
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+  API_BASE_URL: ${API_BASE_URL:-http://localhost:8080/api}
+  COOKIE_SECURE: ${COOKIE_SECURE:-false}
+  MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-20}
+  DOCS_ENABLED: ${DOCS_ENABLED:-true}
+  TRUSTED_HOSTS: ${TRUSTED_HOSTS:-*}
+
+services:
+  db:
+    image: postgres:16.6-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-maanak}
+      POSTGRES_USER: ${POSTGRES_USER:-maanak}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      # Deterministic collation so ORDER BY results match across machines.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-maanak} -d ${POSTGRES_DB:-maanak}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    # Not published by default: the database is reachable only inside the
+    # compose network. Uncomment for local inspection with psql.
+    # ports: ["5432:5432"]
+
+  redis:
+    image: redis:7.4-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --save
+      - "900"
+      - "1"
+      - --appendonly
+      - "no"
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - noeviction
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    # Pulled from quay.io: the docker.io/minio/minio mirror is not publicly
+    # pullable. Any S3-compatible service can replace this in production.
+    image: quay.io/minio/minio:RELEASE.2024-12-18T13-15-44Z
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-maanak}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?set S3_SECRET_KEY in .env}
+      # Enables SSE-S3 using MinIO's built-in KMS. Without a key configured,
+      # MinIO rejects any request that asks for server-side encryption, and
+      # Maanak asks for it on every object. In production this is replaced by a
+      # real KMS or the storage service's own encryption-at-rest.
+      MINIO_KMS_SECRET_KEY: ${MINIO_KMS_SECRET_KEY:?set MINIO_KMS_SECRET_KEY in .env}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  migrate:
+    build:
+      context: api
+    environment: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+
+  api:
+    build:
+      context: api
+    restart: unless-stopped
+    environment: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --proxy-headers
+      - --forwarded-allow-ips
+      - "*"
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+
+  worker:
+    build:
+      context: api
+    restart: unless-stopped
+    environment: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    command: ["arq", "app.worker.main.WorkerSettings"]
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.worker.healthcheck"]
+      interval: 20s
+      timeout: 10s
+      retries: 6
+      start_period: 20s
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    build:
+      context: web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:

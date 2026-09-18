@@ -1,0 +1,40 @@
+# Secrets. .env.example is committed; .env never is.
+.env
+*.env.local
+backup/
+
+# Release output
+dist/
+
+# Test output. Curated copies for the README live in docs/screenshots/.
+api/screenshots/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and scratch files
+*.log
+_*.sh
+_*.py
+_*.txt
+test_output.txt
+full_test.txt
+sbom.json

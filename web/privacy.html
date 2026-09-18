@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy notice — Maanak</title>
+  <meta name="description" content="What personal data Maanak holds, why it is held, how long it is kept, who can see it, and how to exercise your rights over it.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/legal.css">
+</head>
+<body data-public-chrome>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="site-header"></div>
+  <main id="main">
+    <div class="container narrow legal-doc">
+      <h1>Privacy notice</h1>
+      <p class="standfirst">This notice describes the personal data Maanak holds, the reason
+        it holds each category, how long it stays, who can read it, and what you can ask for.
+        It describes the software as built. Where the software does not do something, this
+        notice says so rather than describing an intention.</p>
+
+      <p class="doc-dates">
+        <span>Effective <b>18 September 2026</b></span>
+        <span>Version <b>2026-09</b></span>
+        <span>Supersedes version 2026-01</span>
+      </p>
+
+      <div class="standing-caveat">
+        <p><strong>Maanak is not a government service.</strong> It is not affiliated with,
+          endorsed by or certified by any authority. This notice has not been reviewed by a
+          data protection lawyer and is not a legal assessment of the processing it
+          describes.</p>
+      </div>
+
+      <nav class="doc-toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading">On this page</h2>
+        <ol>
+          <li><a href="#scope">Who this notice covers</a></li>
+          <li><a href="#responsible">Who is responsible</a></li>
+          <li><a href="#law">The law this notice is written to</a></li>
+          <li><a href="#collected">What is collected</a></li>
+          <li><a href="#optional">Contact details are optional</a></li>
+          <li><a href="#retention">How long it is kept</a></li>
+          <li><a href="#access">Who can see it</a></li>
+          <li><a href="#protection">How it is protected</a></li>
+          <li><a href="#never">What is never collected</a></li>
+          <li><a href="#automated">Automated processing</a></li>
+          <li><a href="#rights">Your rights</a></li>
+          <li><a href="#children">Children</a></li>
+          <li><a href="#breach">If there is a breach</a></li>
+          <li><a href="#changes">Changes to this notice</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="scope">Who this notice covers</h2>
+      <p>Three groups of people appear in the records this system keeps.</p>
+      <p>Members of the public who report a problem with a packaged product. Officers who
+        hold an account and carry out inspections. People who appear incidentally in a
+        photograph of a package, a shopfront or a bill, because somebody happened to
+        photograph them along with the evidence.</p>
+      <p>The third group is the one most privacy notices forget. If you appear in a
+        photograph submitted to this system and you want to know what is held about you, the
+        route is the same as for anyone else and it is set out in section 11.</p>
+
+      <h2 id="responsible">Who is responsible</h2>
+      <p>Under the Digital Personal Data Protection Act, 2023, the entity that decides the
+        purpose and means of processing is the Data Fiduciary, and you are the Data
+        Principal.</p>
+      <p><strong>This deployment names no Data Fiduciary.</strong> It runs as a working
+        implementation and no public authority has adopted it, so there is no organisation to
+        name and no published contact channel. That is a real gap and not a formality: it
+        means the rights described in section 11 have no staffed route to reach in this
+        deployment, and the mechanisms that serve them exist in the software without anybody
+        on the other end of them.</p>
+      <p>An authority deploying this software has to name itself here, publish a contact
+        route, appoint the person who answers questions about processing, and set the
+        retention periods described in section 6. Until that happens, treat this notice as a
+        description of the software's behaviour rather than as a commitment by anyone.</p>
+
+      <h2 id="law">The law this notice is written to</h2>
+      <p>India's data protection regime is mid-transition. The Digital Personal Data
+        Protection Act, 2023 was enacted on 11 August 2023. The Digital Personal Data
+        Protection Rules, 2025 were notified on 13 November 2025, and the provisions
+        establishing the Data Protection Board of India came into force on the same date. The
+        substantive obligations on Data Fiduciaries commence on <strong>13 May 2027</strong>.
+        The provisions covering consent managers take effect on 13 November 2026.</p>
+      <p>Until the substantive provisions commence, the operative rules are section 43A and
+        section 72A of the Information Technology Act, 2000 together with the Information
+        Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data
+        or Information) Rules, 2011. The DPDP Act repeals all three when it comes fully into
+        force.</p>
+      <p>This notice is written to the DPDP Act standard ahead of that date because writing
+        to the weaker standard first and upgrading later would mean collecting data now under
+        terms that will not hold.</p>
+      <p>One point of law matters here and is easy to get wrong. Most obligations under the
+        DPDP Act do not apply where personal data is processed in the interest of preventing,
+        detecting, investigating or prosecuting a contravention of any law in force in India.
+        Legal metrology enforcement plausibly falls inside that carve-out. Whether it does in
+        a particular deployment is a question for the deploying authority and its legal
+        advisers, and this implementation does not assume the answer. It applies the full
+        standard regardless, which is the safer direction to be wrong in.</p>
+
+      <h2 id="collected">What is collected</h2>
+
+      <h3>If you report a product</h3>
+      <p>The substance of your report: what the product is, what you saw, where and when you
+        bought it, the prices printed on it, and any photograph or purchase proof you attach.
+        Your name, email address and telephone number, if you choose to give them. The
+        network address and browser identification your device sends when you submit, which
+        are kept to deal with abusive submissions.</p>
+      <p>A hash of your email address or telephone number is stored separately. The status
+        page compares that hash against what you type in. It exists so that a report
+        reference on its own reveals nothing, and so that your contact details never travel
+        in a URL.</p>
+
+      <h3>If you hold an officer account</h3>
+      <p>Name, email address and designation, because every decision in this system is
+        attributed to the person who made it. Role and jurisdiction, which determine what you
+        can reach. An Argon2id hash of your password, never the password. Records of sign-in
+        attempts with the address and browser they came from, kept for lockout and
+        investigation. Session records, so that a session can be revoked.</p>
+      <p>Your name and email address are written into report snapshots, and those snapshots
+        are immutable by database trigger. Closing your account does not remove your name from
+        a report already issued. A report records who decided, and that is what makes it worth
+        anything.</p>
+
+      <h3>Evidence images</h3>
+      <p>The photograph itself, its SHA-256 hash, its size and dimensions, who uploaded it and
+        when, and the camera make and model where the file records them. Location coordinates
+        are stored only when an officer takes an explicit action to record them.</p>
+      <p>Coordinates are never read out of photograph metadata. A camera that writes GPS into
+        a file will have that field ignored, so a photograph cannot quietly place an officer
+        somewhere they did not agree to be placed. Derivative images generated for display are
+        stripped of metadata. Originals keep theirs, because editing an original would break
+        the chain of custody that makes the evidence usable.</p>
+
+      <h3>Technical records</h3>
+      <p>A request identifier that ties a response to a log line and an audit entry.
+        Structured logs, scrubbed of passwords, tokens, secrets and cookies before they are
+        written. Aggregate metrics with no identifiers in them. Rate-limit counters keyed by
+        address or account, which expire with their window.</p>
+
+      <h2 id="optional">Contact details are optional</h2>
+      <p>You can report a product without giving your name, email address or telephone
+        number. The form says so before you submit.</p>
+      <p>The cost of anonymity is that the status page cannot work for you, because there is
+        nothing to check your reference against, and nobody can come back to you for the one
+        extra detail that would have made the report actionable. That is the trade, stated
+        plainly so you can decide.</p>
+
+      <h2 id="retention">How long it is kept</h2>
+      <p><strong>No automatic deletion runs in this build.</strong> Nothing is erased on a
+        schedule. Records carry a retention state, a retain-until date and a legal-hold flag,
+        and those fields are read when somebody acts on them, but no job acts on them by
+        itself. An authority deploying this software must set the periods and run the deletion.
+        Until it does, assume data stays until somebody removes it.</p>
+      <p>Some records cannot be deleted by design, and it is better to say which:</p>
+      <div class="table-wrap">
+        <table class="register">
+          <caption>What resists deletion, and why</caption>
+          <thead>
+            <tr><th scope="col">Record</th><th scope="col">Constraint</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Audit events</td>
+              <td>Append-only. A database trigger rejects <code>UPDATE</code> and
+                <code>DELETE</code>. Entries are chained by hash, so removing one breaks
+                verification of every entry after it.</td>
+            </tr>
+            <tr>
+              <td>Issued report snapshots</td>
+              <td>Immutable by trigger. A correction produces a new report and withdraws the
+                old one; it never edits the original.</td>
+            </tr>
+            <tr>
+              <td>Served notices</td>
+              <td>Frozen once served, for the same reason a served notice cannot be edited on
+                paper.</td>
+            </tr>
+            <tr>
+              <td>Anything under legal hold</td>
+              <td>Blocked while the flag is set.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The conflict between a right to erasure and an append-only audit trail is real. This
+        build does not pretend to have solved it. The trail records that an action happened,
+        who took it and when, which is the only basis on which a decision can later be
+        defended or overturned. A deployment that has to erase audit content needs a legal
+        basis for doing so and a written procedure, and there is no endpoint here that will do
+        it.</p>
+
+      <h2 id="access">Who can see it</h2>
+      <p>Officers see records inside their own jurisdiction and no others. The restriction is
+        applied inside the database query, not filtered out of a result afterwards, so a
+        record from another district cannot leak through a list, a count or a search.</p>
+      <p>Asking for a record outside your jurisdiction returns 404, not 403. A 403 would
+        confirm the record exists, which is itself a disclosure. Controllers see their own
+        jurisdiction and those beneath it. Administrators manage accounts.</p>
+      <p>Nothing is shared outside the system. There is no analytics provider, no advertising
+        network, no third-party font or script, and no external service that receives any of
+        this data. The site loads only from its own origin, enforced by a
+        <code>default-src 'self'</code> content security policy.</p>
+      <p>Public endpoints return progress and nothing else. Report verification confirms that
+        a reference exists and that its content is unchanged. It discloses no brand, no
+        premises, no decision and no officer.</p>
+
+      <h2 id="protection">How it is protected</h2>
+      <p>Passwords are hashed with Argon2id at 64 MiB of memory, a time cost of 3 and a
+        parallelism of 2. The minimum length is 12 characters. Sign-in is rate-limited to 20
+        attempts per address in any five-minute window, and that limit fails closed: if the
+        counter store is unreachable, sign-in is refused rather than allowed through.</p>
+      <p>Sessions live in an HttpOnly cookie that JavaScript cannot read. There are no bearer
+        tokens. Every state-changing request must echo a separate token, so a form submitted
+        from another site is rejected. Access tokens last 15 minutes, refresh tokens 14 days,
+        and a session idles out after 8 hours.</p>
+      <p>Evidence is held in object storage with server-side encryption and versioning
+        switched on, and reached through links that expire after 5 minutes. Uploads are capped
+        at 20 MB and validated from their actual bytes rather than from the filename or the
+        declared content type.</p>
+      <p>What is missing matters as much. This deployment terminates no TLS, enforces no
+        multi-factor authentication, scans no upload for malware, and has had no independent
+        penetration test. <a href="/security.html">The security page</a> lists the full
+        set.</p>
+
+      <h2 id="never">What is never collected</h2>
+      <ul>
+        <li>Plaintext passwords, at any point, anywhere.</li>
+        <li>Plaintext refresh or password-reset tokens. Hashes only.</li>
+        <li>Card or payment details. The system takes no payments.</li>
+        <li>Biometric data. There is no face recognition and no biometric identification of
+          any kind.</li>
+        <li>Location taken from photograph metadata.</li>
+        <li>Caste, religion, health or any other special category, which no field asks
+          for.</li>
+      </ul>
+
+      <h2 id="automated">Automated processing</h2>
+      <p>Optical character recognition reads the label and proposes what it thinks each
+        declaration says. That output is a machine observation with a state such as located or
+        unreadable. It is not a decision and it is not recorded as one.</p>
+      <p>An officer separately records whether each reading is confirmed, corrected, rejected
+        or not applicable. Only reviewed values reach the rule engine. A correction is written
+        as a new revision above the original, so both survive and both appear in the
+        report.</p>
+      <p><strong>No decision affecting anybody is taken by software alone.</strong> Findings
+        show the rule version applied, its citation, the values that went in and the
+        arithmetic that produced the result. A named officer records the outcome with a
+        written reason and carries it.</p>
+
+      <h2 id="rights">Your rights</h2>
+      <p>The DPDP Act gives a Data Principal the right to access a summary of their personal
+        data and how it has been processed, to have it corrected or erased, to a grievance
+        route, and to nominate somebody to act for them if they die or lose capacity.</p>
+      <p>Here is what this software can actually do against each, and where it falls
+        short.</p>
+      <dl class="defs">
+        <dt>Access</dt>
+        <dd>If you reported a product, the status page returns its progress using your
+          reference and the contact detail you gave. It returns progress only. It does not
+          return the inspection that followed, because that record contains a third party's
+          business information.</dd>
+        <dt>Correction</dt>
+        <dd>Officers correct records, and every correction is stored beside the original
+          rather than over it. An issued report cannot be changed. A corrected inspection
+          produces a fresh report and the earlier one is withdrawn, which leaves the change
+          visible instead of silent.</dd>
+        <dt>Erasure</dt>
+        <dd>Available through the retention fields and manual deletion, subject to the
+          constraints in section 6. A record that an issued report or an open case depends on
+          cannot be removed without destroying the thing it supports.</dd>
+        <dt>Grievance</dt>
+        <dd><strong>Not available in this deployment.</strong> There is no named Data
+          Fiduciary and no published channel, so there is nowhere to send a grievance. A real
+          deployment must publish one. Under the current SPDI Rules a grievance officer has to
+          respond within one month.</dd>
+        <dt>Nomination</dt>
+        <dd>Not implemented. No field records a nominee.</dd>
+      </dl>
+      <p>Once the DPDP Act's substantive provisions commence on 13 May 2027, a Data Principal
+        who is dissatisfied can complain to the Data Protection Board of India. That route
+        exists independently of whatever any operator publishes.</p>
+
+      <h2 id="children">Children</h2>
+      <p>Nothing here is aimed at children, and no field asks for anyone's age. Under the DPDP
+        Act, processing a child's personal data needs verifiable consent from a parent or
+        lawful guardian, and a child means anybody under 18.</p>
+      <p>This software performs no age verification. A deployment that expects reports from
+        people under 18 must work out how it will meet that requirement before it opens the
+        form, because the software will not do it.</p>
+
+      <h2 id="breach">If there is a breach</h2>
+      <p>Once the DPDP Act's substantive provisions are in force, a Data Fiduciary has to tell
+        the Data Protection Board and every affected Data Principal without delay, and give
+        the Board fuller detail within 72 hours. There is no severity threshold. Every
+        personal data breach is reportable.</p>
+      <p>Separately, and already in force, directions issued under section 70B of the
+        Information Technology Act, 2000 require certain cyber security incidents to be
+        reported to CERT-In within six hours.</p>
+      <p>This deployment has no monitoring, no alerting and no incident response process, so
+        it would not reliably detect a breach in the first place. That is stated because a
+        notice claiming a six-hour reporting capability without the detection to support it
+        would be worthless.</p>
+
+      <h2 id="changes">Changes to this notice</h2>
+      <p>Each version carries a number and an effective date, shown at the top of this page.
+        The version in force when you submitted a report is stored against that report, so
+        what you agreed to stays on the record even after this page changes.</p>
+      <p>A change that widens what is collected or what it is used for requires a new version
+        number and fresh consent for anything collected after it. Correcting a typographical
+        error does not.</p>
+
+      <div class="doc-foot">
+        <p>Related: <a href="/terms.html">terms of use</a>,
+          <a href="/security.html">security</a>,
+          <a href="/responsible-use.html">responsible use</a>,
+          <a href="/legal-sources.html">legal sources</a>.</p>
+      </div>
+    </div>
+  </main>
+  <div id="site-footer"></div>
+  <script type="module" src="/js/public.js"></script>
+</body>
+</html>

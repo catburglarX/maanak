@@ -1,0 +1,17 @@
+# Browser and accessibility test runner.
+#
+# The upstream Playwright image ships the browser binaries under /ms-playwright but
+# not the Python client, so it is installed here. The client version is pinned to the
+# image tag: a mismatch makes Playwright download its own browsers at run time, which
+# fails in a sandboxed CI network.
+FROM mcr.microsoft.com/playwright/python:v1.49.1-noble
+
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN pip install --no-cache-dir playwright==1.49.1
+
+WORKDIR /w
+
+CMD ["python", "scripts/verify_browser.py"]

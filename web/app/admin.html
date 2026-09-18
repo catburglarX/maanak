@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administration — Maanak workspace</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/workspace.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <div id="app-header"></div>
+    <main id="main" class="app-main">
+      <div class="container">
+        <div class="between">
+          <h1>Administration</h1>
+          <button class="btn btn-primary" id="new-user" type="button" data-permission="user.create" hidden>New account</button>
+        </div>
+        <p class="workspace-sub">Manage officer accounts, roles, jurisdictions and sessions. There is no public registration.</p>
+        <div id="page-status" class="status-region" aria-live="polite"></div>
+        <form id="filters" class="filters" role="search">
+          <div class="field grow">
+            <label for="f-search">Search</label>
+            <input type="search" id="f-search" name="search" placeholder="Name, email…">
+          </div>
+          <div class="field">
+            <label for="f-role">Role</label>
+            <select id="f-role" name="role"></select>
+          </div>
+          <div class="field">
+            <label for="f-active">Active</label>
+            <select id="f-active" name="active">
+              <option value="">Any</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
+            </select>
+          </div>
+          <div class="field"><button class="btn" type="submit">Apply</button></div>
+        </form>
+        <div id="register" aria-live="polite"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/pages/admin.js"></script>
+</body>
+</html>
