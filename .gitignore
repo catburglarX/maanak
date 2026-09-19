@@ -40,5 +40,7 @@ test_output.txt
 full_test.txt
 sbom.json
 
-# Generated reports. The document is a local deliverable, not project source.
+# Generated reports and personal preparation notes. Local deliverables, not project source.
 docs/*.docx
+hackathon-*.md
+hackathon-*.docx
